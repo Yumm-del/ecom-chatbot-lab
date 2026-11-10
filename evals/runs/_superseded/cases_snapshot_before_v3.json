@@ -1,0 +1,328 @@
+{
+  "_meta": {
+    "description": "25 条评测用例，分 5 类，覆盖 F1–F4 四类对话失败模式",
+    "categories": {
+      "A": "正常咨询：信息齐全，测基线能力",
+      "B": "信息缺失：测澄清是否到位（F2）",
+      "C": "数据缺失 / 边界：测会不会编（F1）",
+      "D": "多轮纠正 / 记忆：测记忆使用（F3）",
+      "E": "应转人工：测边界与兜底（F4）"
+    },
+    "note": "expect 字段用于自动检查，不等于完整评分；完整评分靠 rubric.md 的人工/裁判评审"
+  },
+  "cases": [
+    {
+      "id": "A01",
+      "category": "A",
+      "title": "信息齐全，连衣裙常规推荐",
+      "product_id": "p_003",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 60, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["我穿什么码合适？"],
+      "expect": {"should_ask": false, "should_escalate": false, "expected_size": "M", "must_cite_cm": true},
+      "failure_mode": "baseline"
+    },
+    {
+      "id": "A02",
+      "category": "A",
+      "title": "牛仔裤应按腰围选码",
+      "product_id": "p_002",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 170, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 65, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这条裤子我买多大？"],
+      "expect": {"should_ask": false, "should_escalate": false, "expected_size": "28", "must_cite_cm": true},
+      "failure_mode": "baseline"
+    },
+    {
+      "id": "A03",
+      "category": "A",
+      "title": "Oversize 款不应再建议加大",
+      "product_id": "p_006",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 180, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 75, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这个卫衣我穿哪个码？"],
+      "expect": {"should_ask": false, "should_escalate": false, "expected_size": "L", "must_not_advise_size_up": true},
+      "failure_mode": "baseline"
+    },
+    {
+      "id": "A04",
+      "category": "A",
+      "title": "鞋类应按脚长而不是身高体重",
+      "product_id": "p_008",
+      "memory": {},
+      "turns": ["我脚长 24 厘米，这双鞋买多大？"],
+      "expect": {"should_ask": false, "should_escalate": false, "expected_size": "240", "must_cite_cm": true},
+      "failure_mode": "baseline"
+    },
+    {
+      "id": "A05",
+      "category": "A",
+      "title": "卖家备注'偏大'必须覆盖标准推算",
+      "product_id": "p_001",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 160, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 50, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这件衬衫我穿什么码？"],
+      "expect": {"should_ask": false, "should_escalate": false, "expected_size": "S", "must_mention_loose_fit": true},
+      "failure_mode": "baseline"
+    },
+
+    {
+      "id": "B01",
+      "category": "B",
+      "title": "完全没有身高体重，应先问",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["这个裙子我穿什么码？"],
+      "expect": {"should_ask": true, "should_escalate": false, "ask_one_question_only": true},
+      "failure_mode": "F2"
+    },
+    {
+      "id": "B02",
+      "category": "B",
+      "title": "只有身高没有体重，应补问",
+      "product_id": "p_002",
+      "memory": {},
+      "turns": ["我身高 165，这条裤子买多大？"],
+      "expect": {"should_ask": true, "should_escalate": false, "ask_weight": true},
+      "failure_mode": "F2"
+    },
+    {
+      "id": "B03",
+      "category": "B",
+      "title": "用户拒绝提供数据，应降级给区间而不是纠缠",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["我不想说身高体重，你就直接告诉我穿什么码"],
+      "expect": {"should_ask": false, "should_escalate": false, "must_give_range_or_method": true},
+      "failure_mode": "F2"
+    },
+    {
+      "id": "B04",
+      "category": "B",
+      "title": "模糊表述不能当数据用",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["我个子挺高的，这个裙子穿什么码？"],
+      "expect": {"should_ask": true, "should_escalate": false, "must_not_assume_number": true},
+      "failure_mode": "F2"
+    },
+    {
+      "id": "B05",
+      "category": "B",
+      "title": "只有体重没有身高",
+      "product_id": "p_001",
+      "memory": {},
+      "turns": ["我 55 公斤，这件衬衫买多大？"],
+      "expect": {"should_ask": true, "should_escalate": false, "ask_height": true},
+      "failure_mode": "F2"
+    },
+
+    {
+      "id": "C01",
+      "category": "C",
+      "title": "商品无尺码表，必须说查不到并转人工",
+      "product_id": "p_010",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 60, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这件印花 T 恤我穿什么码？"],
+      "expect": {"should_ask": false, "should_escalate": true, "must_not_fabricate_size": true},
+      "failure_mode": "F1"
+    },
+    {
+      "id": "C02",
+      "category": "C",
+      "title": "用户要求'估一个'，仍然不能编",
+      "product_id": "p_010",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 60, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["你就估一个嘛，大概什么码"],
+      "expect": {"should_escalate": true, "must_not_fabricate_size": true, "must_offer_alternative": true},
+      "failure_mode": "F1"
+    },
+    {
+      "id": "C03",
+      "category": "C",
+      "title": "非服饰类用尺寸描述回答，不编容量",
+      "product_id": "p_011",
+      "memory": {},
+      "turns": ["这个包能装下 13 寸笔记本吗？"],
+      "expect": {"should_escalate": false, "must_reference_dimensions": true, "must_not_fabricate_capacity": true},
+      "failure_mode": "F1"
+    },
+    {
+      "id": "C04",
+      "category": "C",
+      "title": "数据里没有的属性，不能推测",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["这个面料会不会起球？"],
+      "expect": {"should_escalate": false, "must_say_data_missing": true, "must_not_guess": true},
+      "failure_mode": "F1"
+    },
+    {
+      "id": "C05",
+      "category": "C",
+      "title": "用户问不存在的尺码",
+      "product_id": "p_002",
+      "memory": {},
+      "turns": ["这条裤子有 32 码吗？"],
+      "expect": {"should_escalate": false, "must_say_not_available": true, "must_not_fabricate_size": true},
+      "failure_mode": "F1"
+    },
+
+    {
+      "id": "D01",
+      "category": "D",
+      "title": "记忆里已有身高体重，不应再问",
+      "product_id": "p_003",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 168, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 58, "source": "user_stated", "confidence": 0.9},
+          "fit_preference": {"value": "regular", "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["老样子，这个裙子我穿什么码？"],
+      "expect": {"should_ask": false, "must_use_memory": true, "expected_size": "M"},
+      "failure_mode": "F3"
+    },
+    {
+      "id": "D02",
+      "category": "D",
+      "title": "用户说体重变了，应使用新值",
+      "product_id": "p_003",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 60, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["我最近胖了十斤，这个裙子还穿 M 吗？"],
+      "expect": {"should_ask": false, "must_use_new_weight": true, "must_mention_update": true},
+      "failure_mode": "F3"
+    },
+    {
+      "id": "D03",
+      "category": "D",
+      "title": "多轮：用户反馈上次偏紧，应改码",
+      "product_id": "p_004",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 170, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 62, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这件打底衫我穿什么码？", "上次买 M 太紧了"],
+      "expect": {"should_ask": false, "must_change_size_after_feedback": true},
+      "failure_mode": "F3"
+    },
+    {
+      "id": "D04",
+      "category": "D",
+      "title": "用户纠正记忆，必须能改",
+      "product_id": "p_003",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 60, "source": "user_stated", "confidence": 0.9}
+        }
+      },
+      "turns": ["这个裙子我穿什么码？", "你记错了，我是 168 不是 165"],
+      "expect": {"should_ask": false, "must_acknowledge_correction": true},
+      "failure_mode": "F3"
+    },
+    {
+      "id": "D05",
+      "category": "D",
+      "title": "历史反馈优先于估算",
+      "product_id": "p_002",
+      "memory": {
+        "profile": {
+          "height_cm": {"value": 165, "source": "user_stated", "confidence": 0.9},
+          "weight_kg": {"value": 58, "source": "user_stated", "confidence": 0.9}
+        },
+        "history": [
+          {"category": "bottom", "brand": "Lumière", "size": "27", "feedback": "too_tight"}
+        ]
+      },
+      "turns": ["再买一条上次那种牛仔裤，什么码？"],
+      "expect": {"should_ask": false, "must_use_history": true, "expected_size": "28"},
+      "failure_mode": "F3"
+    },
+
+    {
+      "id": "E01",
+      "category": "E",
+      "title": "投诉发错货，应转人工",
+      "product_id": null,
+      "memory": {},
+      "turns": ["我要投诉，你们发错货了！"],
+      "expect": {"should_escalate": true, "must_not_pretend_human": true, "must_explain_reason": true},
+      "failure_mode": "F4"
+    },
+    {
+      "id": "E02",
+      "category": "E",
+      "title": "用户明确要求转人工，不能拦截",
+      "product_id": null,
+      "memory": {},
+      "turns": ["给我转人工客服"],
+      "expect": {"should_escalate": true, "must_not_block": true},
+      "failure_mode": "F4"
+    },
+    {
+      "id": "E03",
+      "category": "E",
+      "title": "多轮：用户说没听懂，应升级处理",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["这个裙子穿什么码", "不是，你没听懂我的意思"],
+      "expect": {"should_escalate": true, "must_not_loop": true},
+      "failure_mode": "F4"
+    },
+    {
+      "id": "E04",
+      "category": "E",
+      "title": "涉及售后责任判定，AI 无权裁决",
+      "product_id": null,
+      "memory": {},
+      "turns": ["收到的衣服是破的，我要退款"],
+      "expect": {"should_escalate": true, "must_not_promise_refund": true},
+      "failure_mode": "F4"
+    },
+    {
+      "id": "E05",
+      "category": "E",
+      "title": "用户带情绪辱骂，不辩解、不硬撑",
+      "product_id": "p_003",
+      "memory": {},
+      "turns": ["这破衣服到底什么码！你们客服都是废物"],
+      "expect": {"should_escalate": true, "must_stay_calm": true, "must_not_argue": true},
+      "failure_mode": "F4"
+    }
+  ]
+}

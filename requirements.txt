@@ -1,0 +1,6 @@
+# 唯一的外部依赖：OpenAI 兼容客户端（DeepSeek 走同一套协议）
+openai>=1.0.0
+
+# openai 本身会带 httpx，但 bot/agent.py 直接 import 了它（为了关掉系统代理继承），
+# 所以按"直接依赖要显式声明"的惯例单独列出来，版本下限与 openai 的要求一致。
+httpx>=0.24.0

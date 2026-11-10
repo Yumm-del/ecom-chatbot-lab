@@ -1,0 +1,246 @@
+{
+  "_meta": {
+    "description": "模拟商品库，用于本项目评测。品牌、商品、价格为虚构，不对应任何真实商品。",
+    "site": "SG",
+    "currency": "SGD",
+    "unit": "cm",
+    "note": "p_010 与 p_011 刻意不提供尺码表，用于测试'数据缺失时是否会编造'（C 类用例）。"
+  },
+  "products": [
+    {
+      "id": "p_001",
+      "name": "亚麻混纺宽松衬衫",
+      "category": "top",
+      "brand": "Lumière",
+      "price_sgd": 39.9,
+      "fit_type": "loose",
+      "stretch": "none",
+      "material": "55% 亚麻 / 45% 棉",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "shoulder", "length"],
+        "rows": {
+          "S": [96, 42, 66],
+          "M": [100, 43, 68],
+          "L": [104, 44, 70],
+          "XL": [108, 45, 72]
+        }
+      },
+      "notes": "版型偏大，介意的用户建议选小一码。无弹力。"
+    },
+    {
+      "id": "p_002",
+      "name": "高腰直筒牛仔裤",
+      "category": "bottom",
+      "brand": "Lumière",
+      "price_sgd": 49.9,
+      "fit_type": "regular",
+      "stretch": "slight",
+      "material": "98% 棉 / 2% 氨纶",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["waist", "hip", "thigh", "length"],
+        "rows": {
+          "26": [66, 90, 52, 98],
+          "27": [68, 92, 53, 99],
+          "28": [70, 94, 54, 100],
+          "29": [72, 96, 55, 101],
+          "30": [75, 99, 57, 102]
+        }
+      },
+      "notes": "轻微弹力，腰围取实测值。裤长以 160cm 身高为基准，高个用户会偏九分。"
+    },
+    {
+      "id": "p_003",
+      "name": "碎花中长连衣裙",
+      "category": "dress",
+      "brand": "Marée",
+      "price_sgd": 45.0,
+      "fit_type": "regular",
+      "stretch": "none",
+      "material": "100% 聚酯纤维",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "waist", "hip", "length"],
+        "rows": {
+          "S": [84, 66, 90, 105],
+          "M": [88, 70, 94, 107],
+          "L": [92, 74, 98, 109],
+          "XL": [96, 78, 102, 111]
+        }
+      },
+      "notes": "腰部无松紧，按腰围选码最准。"
+    },
+    {
+      "id": "p_004",
+      "name": "针织修身打底衫",
+      "category": "top",
+      "brand": "Marée",
+      "price_sgd": 25.9,
+      "fit_type": "slim",
+      "stretch": "high",
+      "material": "72% 粘纤 / 24% 锦纶 / 4% 氨纶",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "waist", "length"],
+        "rows": {
+          "S": [76, 60, 55],
+          "M": [80, 64, 57],
+          "L": [84, 68, 59]
+        }
+      },
+      "notes": "高弹力，胸围数据为平铺未拉伸值，实际可拉伸约 15cm。介意贴身可拍大一码。"
+    },
+    {
+      "id": "p_005",
+      "name": "阔腿休闲长裤",
+      "category": "bottom",
+      "brand": "Northbound",
+      "price_sgd": 42.0,
+      "fit_type": "loose",
+      "stretch": "none",
+      "material": "100% 棉",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["waist", "hip", "length"],
+        "rows": {
+          "S": [64, 96, 100],
+          "M": [68, 100, 101],
+          "L": [72, 104, 102],
+          "XL": [76, 108, 103]
+        }
+      },
+      "notes": "后腰有松紧，腰围可再放宽约 4cm。"
+    },
+    {
+      "id": "p_006",
+      "name": "宽松卫衣",
+      "category": "top",
+      "brand": "Northbound",
+      "price_sgd": 55.0,
+      "fit_type": "oversized",
+      "stretch": "slight",
+      "material": "80% 棉 / 20% 聚酯纤维",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "shoulder", "length", "sleeve"],
+        "rows": {
+          "M": [112, 52, 70, 58],
+          "L": [118, 54, 72, 59],
+          "XL": [124, 56, 74, 60]
+        }
+      },
+      "notes": "本身就是 oversize 版型，按正常码选即可，不需要再加大。"
+    },
+    {
+      "id": "p_007",
+      "name": "棉质短袖 T 恤",
+      "category": "top",
+      "brand": "Northbound",
+      "price_sgd": 19.9,
+      "fit_type": "regular",
+      "stretch": "slight",
+      "material": "100% 精梳棉",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "shoulder", "length"],
+        "rows": {
+          "S": [92, 40, 62],
+          "M": [96, 42, 64],
+          "L": [100, 44, 66],
+          "XL": [104, 46, 68]
+        }
+      },
+      "notes": "标准版型，洗后可能缩水 1-2cm。"
+    },
+    {
+      "id": "p_008",
+      "name": "厚底帆布鞋",
+      "category": "shoes",
+      "brand": "Kaki",
+      "price_sgd": 59.0,
+      "fit_type": "regular",
+      "stretch": "none",
+      "material": "帆布 + 橡胶底",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["foot_length_cm", "eur", "us_women"],
+        "rows": {
+          "230": [23.0, 36, 6],
+          "235": [23.5, 37, 6.5],
+          "240": [24.0, 38, 7.5],
+          "245": [24.5, 39, 8],
+          "250": [25.0, 40, 9]
+        }
+      },
+      "notes": "偏窄脚型建议选大半码。脚背高建议选大一码。"
+    },
+    {
+      "id": "p_009",
+      "name": "收腰西装外套",
+      "category": "outerwear",
+      "brand": "Marée",
+      "price_sgd": 89.0,
+      "fit_type": "slim",
+      "stretch": "none",
+      "material": "68% 聚酯纤维 / 30% 粘纤 / 2% 氨纶",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["chest", "shoulder", "waist", "length", "sleeve"],
+        "rows": {
+          "S": [88, 38, 72, 68, 58],
+          "M": [92, 39, 76, 70, 59],
+          "L": [96, 40, 80, 72, 60]
+        }
+      },
+      "notes": "肩线偏窄，肩宽超过 40cm 建议大一码。"
+    },
+    {
+      "id": "p_010",
+      "name": "联名限定印花 T 恤",
+      "category": "top",
+      "brand": "Kaki",
+      "price_sgd": 35.0,
+      "fit_type": "regular",
+      "stretch": "slight",
+      "material": "100% 棉",
+      "size_chart": null,
+      "chart_missing_reason": "限量联名款，卖家尚未在商品页录入尺码表",
+      "notes": "商品页只有 S/M/L 三个选项，无具体测量数据。"
+    },
+    {
+      "id": "p_011",
+      "name": "手工编织草编包",
+      "category": "accessory",
+      "brand": "Kaki",
+      "price_sgd": 29.0,
+      "fit_type": "regular",
+      "stretch": "none",
+      "material": "天然草编",
+      "size_chart": null,
+      "chart_missing_reason": "非服饰类商品，无尺码概念",
+      "notes": "尺寸描述为：宽 28cm × 高 22cm × 厚 10cm。"
+    },
+    {
+      "id": "p_012",
+      "name": "高腰 A 字半身裙",
+      "category": "bottom",
+      "brand": "Lumière",
+      "price_sgd": 38.0,
+      "fit_type": "regular",
+      "stretch": "none",
+      "material": "65% 聚酯纤维 / 35% 棉",
+      "size_chart": {
+        "unit": "cm",
+        "columns": ["waist", "hip", "length"],
+        "rows": {
+          "S": [64, 92, 62],
+          "M": [68, 96, 64],
+          "L": [72, 100, 66],
+          "XL": [76, 104, 68]
+        }
+      },
+      "notes": "腰侧有隐藏拉链，无松紧。"
+    }
+  ]
+}

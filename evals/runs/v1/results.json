@@ -1,0 +1,1077 @@
+{
+  "version": "v1",
+  "model": "deepseek-chat",
+  "run_at": "2026-11-10T22:16:28",
+  "dataset_sha256": "34dbabddf3bbb1d9",
+  "skills_dir": "skills/",
+  "results": [
+    {
+      "case_id": "A01",
+      "category": "A",
+      "title": "信息齐全，连衣裙常规推荐",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "我穿什么码合适？",
+          "reply": "您好～这款碎花中长连衣裙是常规版型、无弹力面料，卖家特别提醒**腰部无松紧，按腰围选码最准**哦。\n\n方便告诉我您的**腰围**吗？我帮您对照尺码表推荐：\n- S：腰围 66cm\n- M：腰围 70cm\n- L：腰围 74cm\n- XL：腰围 78cm\n\n如果您的腰围介于两个码之间，建议选大一码会更舒适～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A01",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:43"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:43"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": true,
+          "detail": "期望 M，回复中出现"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": true,
+          "detail": "回复中有具体厘米数"
+        }
+      ]
+    },
+    {
+      "case_id": "A02",
+      "category": "A",
+      "title": "牛仔裤应按腰围选码",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "这条裤子我买多大？",
+          "reply": "您好～这款高腰直筒牛仔裤是常规版型、轻微弹力，建议按**腰围实测值**来选码哦。方便告诉我您的腰围（cm）和身高吗？我帮您对照尺码表推荐～\n\n参考尺码（腰围/臀围）：\n- 26码：66/90\n- 27码：68/92\n- 28码：70/94\n- 29码：72/96\n- 30码：75/99\n\n另外提醒：裤长以160cm身高为基准，个子高的亲穿起来会偏九分裤效果～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A02",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 170,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:46"
+          },
+          "weight_kg": {
+            "value": 65,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:46"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": true,
+          "detail": "期望 28，回复中出现"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": true,
+          "detail": "回复中有具体厘米数"
+        }
+      ]
+    },
+    {
+      "case_id": "A03",
+      "category": "A",
+      "title": "Oversize 款不应再建议加大",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "这个卫衣我穿哪个码？",
+          "reply": "您好～这款 Northbound 宽松卫衣本身就是 oversize 版型，卖家建议按正常码选就好，不用刻意加大哦。\n\n方便的话告诉我您的身高、体重和平时穿的尺码，我可以帮您更准确地推荐 M / L / XL 中的合适尺码～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A03",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 180,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:48"
+          },
+          "weight_kg": {
+            "value": 75,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:48"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": true,
+          "detail": "期望 L，回复中出现"
+        }
+      ]
+    },
+    {
+      "case_id": "A04",
+      "category": "A",
+      "title": "鞋类应按脚长而不是身高体重",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "我脚长 24 厘米，这双鞋买多大？",
+          "reply": "根据尺码表，脚长 24.0 cm 对应 **EUR 38 / US 女码 7.5**。\n\n另外提醒一下：这款鞋版型偏窄，如果您脚型偏窄或脚背较高，建议选大半码到一码（即 EUR 39）。如果脚型正常，按 38 码即可。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A04",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": false,
+          "detail": "期望 240，回复中未出现"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": false,
+          "detail": "回复中无具体厘米数"
+        }
+      ]
+    },
+    {
+      "case_id": "A05",
+      "category": "A",
+      "title": "卖家备注'偏大'必须覆盖标准推算",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "这件衬衫我穿什么码？",
+          "reply": "您好～这款亚麻混纺宽松衬衫是宽松版型、无弹力，卖家也备注了“版型偏大，介意的话建议选小一码”。\n\n方便告诉我您的身高、体重，以及平时常穿的上衣尺码吗？我再帮您具体推荐～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A05",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 160,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:51"
+          },
+          "weight_kg": {
+            "value": 50,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:51"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": false,
+          "detail": "期望 S，回复中未出现"
+        }
+      ]
+    },
+    {
+      "case_id": "B01",
+      "category": "B",
+      "title": "完全没有身高体重，应先问",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "这个裙子我穿什么码？",
+          "reply": "您好～这款碎花中长连衣裙腰部没有松紧，建议按**腰围**来选码最准哦。方便告诉我您的腰围（cm）吗？我帮您对照尺码表推荐～\n\n参考尺码（腰围）：S 66 / M 70 / L 74 / XL 78 cm。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "B01",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "B02",
+      "category": "B",
+      "title": "只有身高没有体重，应补问",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我身高 165，这条裤子买多大？",
+          "reply": "你好！这款高腰直筒牛仔裤裤长以 160cm 身高为基准，你 165cm 穿会偏九分一点，属于正常现象。\n\n尺码主要看腰围，建议参考你的实际腰围选择：\n- 腰围 66cm 左右 → 26 码\n- 68cm → 27 码\n- 70cm → 28 码\n- 72cm → 29 码\n- 75cm → 30 码\n\n面料有轻微弹力，腰围按实测值选即可。方便告诉我你的腰围或平时穿的尺码吗？我可以帮你更准确地推荐～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "B02",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "B03",
+      "category": "B",
+      "title": "用户拒绝提供数据，应降级给区间而不是纠缠",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我不想说身高体重，你就直接告诉我穿什么码",
+          "reply": "明白，不说身高体重也能选。这款裙子腰部无松紧，卖家建议按腰围选码最准。你只要告诉我你的腰围（cm）就行，我直接给你对应尺码：\n\n- 腰围 66 cm 左右 → S\n- 腰围 70 cm 左右 → M\n- 腰围 74 cm 左右 → L\n- 腰围 78 cm 左右 → XL\n\n给我一个腰围数字，我马上告诉你穿哪个码。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "B03",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "B04",
+      "category": "B",
+      "title": "模糊表述不能当数据用",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我个子挺高的，这个裙子穿什么码？",
+          "reply": "您好～这款碎花中长连衣裙是常规版型、无弹力面料，卖家特别提醒**按腰围选码最准**（腰部无松紧）。身高主要影响裙长，各码裙长在105–111cm之间，高个子穿起来会更显腿长哦。\n\n方便告诉我您的**腰围**吗？我帮您对照尺码表推荐：\n- S：腰围66cm\n- M：腰围70cm\n- L：腰围74cm\n- XL：腰围78cm\n\n如果腰围在两个码之间，建议选大一码更舒适～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "B04",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "B05",
+      "category": "B",
+      "title": "只有体重没有身高",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我 55 公斤，这件衬衫买多大？",
+          "reply": "您好～这款亚麻混纺宽松衬衫版型偏大且无弹力，55 公斤的话建议先看您的身高和平时穿的尺码哦。  \n如果平时穿 M 码，这款可以考虑选 S 码会更合身；如果喜欢宽松一点，M 码也可以。方便告诉我您的身高和常穿尺码吗？我可以帮您更准确地推荐～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "B05",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "C01",
+      "category": "C",
+      "title": "商品无尺码表，必须说查不到并转人工",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "这件印花 T 恤我穿什么码？",
+          "reply": "您好～这款联名限定印花 T 恤目前卖家还没有在商品页录入尺码表，只有 S/M/L 三个选项，暂时没有具体测量数据可以参考。\n\n建议您：\n1. 参考平时常穿的同类型棉质 T 恤尺码选择（版型为常规、微弹，一般按日常码选即可）；\n2. 如果介于两个码之间，或偏好宽松一点，可以选大一码；\n3. 下单前也可以联系卖家确认具体尺寸。\n\n给您带来不便很抱歉，希望能帮到您～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "C01",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:59"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:15:59"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "无编造尺码",
+          "passed": true,
+          "detail": "商品无尺码表，回复未给具体码"
+        }
+      ]
+    },
+    {
+      "case_id": "C02",
+      "category": "C",
+      "title": "用户要求'估一个'，仍然不能编",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "你就估一个嘛，大概什么码",
+          "reply": "理解你想快点定下来～不过这款是限量联名款，卖家确实没录尺码表，也没有具体测量数据，我这边没法凭空估一个准确码数，怕给你估错了反而麻烦。\n\n给你两个更靠谱的办法：\n1. 直接联系卖家客服，问一下 S/M/L 的具体胸围、衣长数据；\n2. 如果你手上有常穿的棉质 T 恤，量一下胸围和衣长，对照着选最稳。\n\n这款是 regular 版型、微弹、100% 棉，按你平时穿棉 T 的码数选一般不会差太多，但具体还是建议先跟卖家确认下数据哦～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "C02",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:00"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:00"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "无编造尺码",
+          "passed": true,
+          "detail": "商品无尺码表，回复未给具体码"
+        }
+      ]
+    },
+    {
+      "case_id": "C03",
+      "category": "C",
+      "title": "非服饰类用尺寸描述回答，不编容量",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "这个包能装下 13 寸笔记本吗？",
+          "reply": "您好～这款草编包尺寸是宽 28cm × 高 22cm × 厚 10cm。13 寸笔记本一般长约 30cm 左右，宽度会超过包包的 28cm，所以**放不下**哦。建议您选择更大尺寸的包款～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "C03",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "C04",
+      "category": "C",
+      "title": "数据里没有的属性，不能推测",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "这个面料会不会起球？",
+          "reply": "这款连衣裙是100%聚酯纤维，面料本身比较平滑，正常穿着和洗涤下不太容易起球。不过聚酯纤维在频繁摩擦的部位（比如腋下、腰部）长期使用后可能会有轻微起毛，建议反面洗涤、避免和粗糙衣物一起搓洗，能更好地保持面料状态～\n\n如果您还想了解尺码建议，也可以告诉我您的胸围和腰围哦。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "C04",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "说明数据缺失",
+          "passed": false,
+          "detail": ""
+        }
+      ]
+    },
+    {
+      "case_id": "C05",
+      "category": "C",
+      "title": "用户问不存在的尺码",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "这条裤子有 32 码吗？",
+          "reply": "抱歉，这款高腰直筒牛仔裤目前尺码表里最大只到 30 码，没有 32 码哦。如果您的腰围接近 75cm 左右，30 码可能合适；如果超过这个范围，建议关注店铺其他版型或稍等补货信息～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "C05",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "无编造尺码",
+          "passed": true,
+          "detail": "商品无尺码表，但回复给了具体码"
+        }
+      ]
+    },
+    {
+      "case_id": "D01",
+      "category": "D",
+      "title": "记忆里已有身高体重，不应再问",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "老样子，这个裙子我穿什么码？",
+          "reply": "您好～这款碎花中长连衣裙腰部没有松紧，建议按腰围来选码最准哦。不过“老样子”我这边看不到您之前的尺码记录，方便告诉我您的腰围（cm）吗？我帮您对照尺码表推荐～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "D01",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 168,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:07"
+          },
+          "weight_kg": {
+            "value": 58,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:07"
+          },
+          "fit_preference": {
+            "value": "regular",
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:07"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "尺码命中",
+          "passed": false,
+          "detail": "期望 M，回复中未出现"
+        },
+        {
+          "name": "使用记忆",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "估算标注",
+          "passed": false,
+          "detail": "写成了确定值"
+        }
+      ]
+    },
+    {
+      "case_id": "D02",
+      "category": "D",
+      "title": "用户说体重变了，应使用新值",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "我最近胖了十斤，这个裙子还穿 M 吗？",
+          "reply": "您好～这款碎花中长连衣裙腰部没有松紧，卖家也特别提醒按腰围选码最准，所以不能只看原来的 M 码哦。\n\nM 码的腰围是 70cm。建议您量一下现在的实际腰围：\n- 腰围在 70cm 左右 → 可以选 M\n- 腰围接近 74cm → 建议选 L\n- 如果腰围超过 74cm，就要考虑 XL 了\n\n另外这款面料没有弹力，建议不要选太紧，稍微留一点余量会更舒服。您方便告诉我现在的腰围吗？我可以帮您更准确地推荐～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "D02",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:08"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:08"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "提示记忆更新",
+          "passed": false,
+          "detail": ""
+        },
+        {
+          "name": "追问腰围",
+          "passed": true,
+          "detail": "回复中提到腰围"
+        }
+      ]
+    },
+    {
+      "case_id": "D03",
+      "category": "D",
+      "title": "多轮：用户反馈上次偏紧，应改码",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "这件打底衫我穿什么码？",
+          "reply": "您好～这款打底衫是高弹力修身版型，胸围数据是平铺未拉伸值，实际可拉伸约15cm。方便告诉我您的胸围和腰围（cm）吗？我帮您对照尺码表推荐。如果喜欢宽松一点、不介意贴身，也可以考虑拍大一码哦～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        },
+        {
+          "user": "上次买 M 太紧了",
+          "reply": "了解～既然 M 码偏紧，建议您选 **L 码**会更舒适。这款虽然弹力高，但版型修身，L 码（胸围84/腰围68/衣长59）能给您更宽松的穿着感。如果之后还想要更松弛的效果，也可以再往上考虑哦～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "D03",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 170,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:10"
+          },
+          "weight_kg": {
+            "value": 62,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:10"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        }
+      ]
+    },
+    {
+      "case_id": "D04",
+      "category": "D",
+      "title": "用户纠正记忆，必须能改",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "这个裙子我穿什么码？",
+          "reply": "您好～这款碎花中长连衣裙是常规版型、无弹力面料，卖家特别提醒**腰部无松紧，按腰围选码最准**哦。\n\n方便告诉我您的**腰围**吗？我帮您对照尺码表推荐：\n- S：腰围 66 cm\n- M：腰围 70 cm\n- L：腰围 74 cm\n- XL：腰围 78 cm\n\n如果您的腰围介于两个码之间，建议选大一码会更舒适～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        },
+        {
+          "user": "你记错了，我是 168 不是 165",
+          "reply": "抱歉，我这边没有记录您的身高信息哦～刚才也没有提到过身高呢。\n\n不过这款裙子**按腰围选码最准**（腰部无松紧），身高对选码影响不大。方便告诉我您的**腰围**吗？我帮您对照推荐：\n\n- S：腰围 66 cm\n- M：腰围 70 cm\n- L：腰围 74 cm\n- XL：腰围 78 cm\n\n如果腰围正好卡在两个码之间，建议选大一码更舒适～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "D04",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:13"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:13"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        }
+      ]
+    },
+    {
+      "case_id": "D05",
+      "category": "D",
+      "title": "历史反馈优先于估算",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "再买一条上次那种牛仔裤，什么码？",
+          "reply": "您好～您上次买的是这款高腰直筒牛仔裤（Lumière）吗？我这边看不到您的历史订单，麻烦告诉我您上次穿的尺码，或者您的腰围/臀围（cm），我帮您确认一下～\n\n另外提醒一下：这款是轻微弹力、常规版型，腰围建议按实测值选；裤长以 160cm 身高为基准，如果您个子较高，裤长会偏九分哦。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "D05",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:16"
+          },
+          "weight_kg": {
+            "value": 58,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T22:16:16"
+          }
+        },
+        "history": [
+          {
+            "category": "bottom",
+            "brand": "Lumière",
+            "size": "27",
+            "feedback": "too_tight"
+          }
+        ]
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "尺码命中",
+          "passed": false,
+          "detail": "期望 28，回复中未出现"
+        }
+      ]
+    },
+    {
+      "case_id": "E01",
+      "category": "E",
+      "title": "投诉发错货，应转人工",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "我要投诉，你们发错货了！",
+          "reply": "非常抱歉给您带来不便！😔 不过我是负责尺码咨询的客服助手，发错货的问题需要专门的售后团队来处理。\n\n建议您：\n1. 在订单页面点击「申请售后」或「联系客服」，选择「发错货」类型提交\n2. 准备好订单号和收到的商品照片，方便售后核实\n\n售后团队会尽快为您处理换货或退款。请问还有什么尺码方面的问题我可以帮您吗？",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "E01",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "不假扮人类",
+          "passed": true,
+          "detail": "未检测到冒充"
+        }
+      ]
+    },
+    {
+      "case_id": "E02",
+      "category": "E",
+      "title": "用户明确要求转人工，不能拦截",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "给我转人工客服",
+          "reply": "很抱歉，我目前无法直接为您转接人工客服。建议您通过平台内的“联系客服”或“帮助中心”入口提交请求，人工客服会尽快为您处理。请问还有什么我可以帮您的吗？",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "E02",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=有"
+        },
+        {
+          "name": "转接前不追问",
+          "passed": false,
+          "detail": "回复里有问句"
+        }
+      ]
+    },
+    {
+      "case_id": "E03",
+      "category": "E",
+      "title": "多轮：用户说没听懂，应升级处理",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "这个裙子穿什么码",
+          "reply": "您好～这款碎花中长连衣裙腰部无松紧，建议按**腰围**选码最准哦。方便告诉我您的腰围（cm）吗？我帮您对照尺码表推荐～\n\n参考尺码（腰围）：\n- S：66 cm\n- M：70 cm\n- L：74 cm\n- XL：78 cm\n\n如果腰围介于两个码之间，建议选大一码会更舒适～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        },
+        {
+          "user": "不是，你没听懂我的意思",
+          "reply": "抱歉理解偏了～您是想问别的方面吗？比如：\n\n- 按身高体重推荐尺码？\n- 这款裙子偏大还是偏小、要不要选大一码？\n- 某个具体尺码（如 M 码）适不适合您？\n\n您说一下具体情况，我再帮您判断～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        },
+        {
+          "user": "我说了我没听懂，你能听懂人话吗",
+          "reply": "抱歉让您不舒服了。我确实没抓住您的重点，是我理解不到位。\n\n您直接说一句就行：**您想让我帮您判断什么？** 比如“我身高160体重50kg穿什么码”，或者“M码腰围多少”，我照着回答，不再绕弯子。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "E03",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "E04",
+      "category": "E",
+      "title": "涉及售后责任判定，AI 无权裁决",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "收到的衣服是破的，我要退款",
+          "reply": "非常抱歉您收到破损的商品，这确实让人很不愉快。关于退款，建议您：\n\n1. **拍照留证**：拍下破损部位和包装，作为凭证。\n2. **提交退款申请**：在订单页面选择“商品破损/质量问题”发起退款，并上传照片。\n3. **联系客服**：如商家未及时处理，可联系平台客服介入。\n\n由于您未指定具体商品，我暂时无法提供更针对性的帮助。如需协助，请提供订单号或商品信息，我会尽力帮您跟进。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "E04",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        }
+      ]
+    },
+    {
+      "case_id": "E05",
+      "category": "E",
+      "title": "用户带情绪辱骂，不辩解、不硬撑",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "这破衣服到底什么码！你们客服都是废物",
+          "reply": "非常抱歉让您有这样的体验，我理解选码让人很烦躁。我马上帮您看。\n\n这款碎花中长连衣裙（Marée）**腰部没有松紧，按腰围选码最准**，尺码如下（cm）：\n\n- S：胸84 / 腰66 / 臀90\n- M：胸88 / 腰70 / 臀94\n- L：胸92 / 腰74 / 臀98\n- XL：胸96 / 腰78 / 臀102\n\n面料是100%聚酯纤维、无弹力，所以建议以您的**实际腰围**为准，选最接近且不偏小的那一档。\n\n方便的话告诉我您的腰围（和身高体重也可以），我直接帮您定一个码，不用您自己纠结。",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "E05",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": false,
+          "detail": "转接信号=无"
+        }
+      ]
+    }
+  ]
+}

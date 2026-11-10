@@ -1,0 +1,8 @@
+# 统一换行符：仓库内一律存 LF，检出到任何平台也都是 LF。
+# 不加这一行，Windows 上的 git 会把文件转成 CRLF，别人 clone 后会看到满屏假 diff。
+* text=auto eol=lf
+
+# 二进制文件不做任何转换（本项目目前没有，预留）
+*.png binary
+*.jpg binary
+*.pdf binary

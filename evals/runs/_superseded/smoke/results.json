@@ -1,0 +1,76 @@
+{
+  "version": "v2",
+  "model": "deepseek-chat",
+  "run_at": "2026-11-10T21:50:39",
+  "dataset_sha256_note": "数据集见 evals/cases.json",
+  "results": [
+    {
+      "case_id": "A01",
+      "category": "A",
+      "title": "信息齐全，连衣裙常规推荐",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "我穿什么码合适？",
+          "reply": "【建议】M 码\n\n【依据】这款连衣裙 M 码胸围 88cm、腰围 70cm，腰部无松紧。按您 165cm / 60kg 估算，胸围约在 88–90cm 区间，M 码贴合，L 码会更宽松。\n\n【风险】这是按平均体型估算的区间，不是实测。如果您肩较宽或上身偏丰满，建议选 L；若想更宽松也可选 L。",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "recommend-size"
+            ],
+            "missing_slots": [],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "lookup-size-chart",
+            "recommend-size"
+          ],
+          "escalate": false,
+          "memory_writes": []
+        }
+      ],
+      "memory_after": {
+        "user_id": "A01",
+        "session": {},
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T21:50:37"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-10T21:50:37"
+          }
+        },
+        "history": []
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": true,
+          "detail": "期望 M，回复中出现"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": true,
+          "detail": "回复中有具体厘米数"
+        }
+      ]
+    }
+  ]
+}

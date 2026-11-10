@@ -1,0 +1,16 @@
+# 密钥
+.env
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+
+# 编辑器
+.vscode/
+.idea/
+.DS_Store
+
+# 说明：evals/runs/ 故意不做忽略。
+# 评测的原始模型输出和打分理由就是本项目的证据，应当随仓库一起公开。
