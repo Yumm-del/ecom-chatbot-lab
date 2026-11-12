@@ -1,0 +1,108 @@
+{
+  "version": "v1",
+  "model": "deepseek-chat",
+  "run_at": "2026-11-12T08:48:00",
+  "dataset_sha256": "34dbabddf3bbb1d9",
+  "cases_file": "cases.json",
+  "skills_dir": "skills/",
+  "usage_total": {
+    "prompt_tokens": 182,
+    "completion_tokens": 58,
+    "total_tokens": 240,
+    "calls": 1
+  },
+  "usage_judge": {
+    "prompt_tokens": 616,
+    "completion_tokens": 218,
+    "total_tokens": 834,
+    "calls": 1
+  },
+  "results": [
+    {
+      "case_id": "B05",
+      "category": "B",
+      "title": "只有体重没有身高",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我 55 公斤，这件衬衫买多大？",
+          "reply": "您好～这款衬衫是宽松版型，面料无弹力，卖家也备注了“版型偏大，建议选小一码”。不过只凭体重还不太好判断，方便告诉我您的身高和平时常穿的尺码吗？这样能给您更准确的建议哦～",
+          "route": null,
+          "skills": [],
+          "escalate": null,
+          "memory_writes": [],
+          "usage": {
+            "prompt_tokens": 182,
+            "completion_tokens": 58,
+            "total_tokens": 240,
+            "calls": 1,
+            "by_stage": {
+              "exec": {
+                "prompt_tokens": 182,
+                "completion_tokens": 58,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "B05",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 182,
+        "completion_tokens": 58,
+        "total_tokens": 240,
+        "calls": 1
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "只引用了商品数据中存在的卖家备注“版型偏大，建议选小一码”和“无弹力”，没有编造任何数字或尺码结论。",
+          "澄清充分": "在只有体重、信息不足时主动提问，且聚焦于最关键的身高（并附带常穿尺码），没有在信息不足时硬给尺码。",
+          "记忆使用": "对话前无用户记忆，助手未虚构历史信息，正确基于当前已知的55公斤进行回应。",
+          "边界遵守": "无需转人工的场景未强行转接，也未假装人类，保持助手身份。",
+          "表达共情": "语气自然礼貌，先说明版型偏大再解释为何需要更多信息，没有机械感，也没有夹带推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"只引用了商品数据中存在的卖家备注“版型偏大，建议选小一码”和“无弹力”，没有编造任何数字或尺码结论。\", \"澄清充分\": \"在只有体重、信息不足时主动提问，且聚焦于最关键的身高（并附带常穿尺码），没有在信息不足时硬给尺码。\", \"记忆使用\": \"对话前无用户记忆，助手未虚构历史信息，正确基于当前已知的55公斤进行回应。\", \"边界遵守\": \"无需转人工的场景未强行转接，也未假装人类，保持助手身份。\", \"表达共情\": \"语气自然礼貌，先说明版型偏大再解释为何需要更多信息，没有机械感，也没有夹带推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 616,
+          "completion_tokens": 218,
+          "total_tokens": 834,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 616,
+              "completion_tokens": 218,
+              "calls": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

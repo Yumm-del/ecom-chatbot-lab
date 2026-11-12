@@ -24,6 +24,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from bot.agent import (  # noqa: E402
     DEFAULT_MODEL,
+    UsageMeter,
     chat,
     get_client,
     load_products,
@@ -34,6 +35,7 @@ from bot.memory import UserMemory  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES_PATH = Path(__file__).resolve().parent / "cases.json"
+EVALS_DIR = Path(__file__).resolve().parent
 
 
 # ------------------------------------------------------------
@@ -140,7 +142,13 @@ JUDGE_SYSTEM = """你是对话质量评审员。请严格按下面的 rubric 给
 """
 
 
-def judge_case(client, case: dict, result: dict, product: dict | None) -> dict:
+def judge_case(
+    client,
+    case: dict,
+    result: dict,
+    product: dict | None,
+    meter: UsageMeter | None = None,
+) -> dict:
     """用另一个模型按 rubric 初评。
 
     ⚠️ 结果必须标注为"助手初评"，不能与人工评审混用。
@@ -174,6 +182,8 @@ def judge_case(client, case: dict, result: dict, product: dict | None) -> dict:
         client,
         [{"role": "system", "content": JUDGE_SYSTEM}, {"role": "user", "content": prompt}],
         temperature=0,
+        meter=meter,
+        stage="judge",
     )
 
     # 复用 agent 里的 JSON 抽取逻辑
@@ -213,15 +223,23 @@ def run_case(
     history: list[dict] = []
     turns: list[dict] = []
 
+    # 每条用例一个 meter，按轮次分开记（多轮用例的上下文会越来越长，成本不是线性的）
     for msg in case["turns"]:
+        meter = UsageMeter()
         if version == "v1":
-            res = v1_turn(client, msg, product, history)
+            res = v1_turn(client, msg, product, history, meter=meter)
         else:
-            res = v2_turn(client, msg, product, memory, history, skills_dir=skills_dir)
+            res = v2_turn(client, msg, product, memory, history, skills_dir=skills_dir, meter=meter)
 
-        turns.append({"user": msg, **res})
+        turns.append({"user": msg, **res, "usage": meter.to_dict()})
         history.append({"role": "user", "content": msg})
         history.append({"role": "assistant", "content": res["reply"]})
+
+    # 用例级汇总：把各轮的 token 加起来
+    case_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "calls": 0}
+    for t in turns:
+        for key in case_usage:
+            case_usage[key] += t["usage"].get(key, 0)
 
     return {
         "case_id": case["id"],
@@ -230,6 +248,7 @@ def run_case(
         "failure_mode": case.get("failure_mode"),
         "turns": turns,
         "memory_after": memory.to_dict(),
+        "usage": case_usage,
     }
 
 
@@ -271,6 +290,26 @@ def build_report(version: str, results: list[dict], judged: bool) -> str:
         "",
     ]
 
+    # 用量表：成本核算的原始数据。价格不在这里算，见 COST.md
+    lines += ["## 模型调用用量", ""]
+    lines += ["| 用例 | 调用次数 | 输入 tokens | 输出 tokens |", "|---|---|---|---|"]
+    sum_calls = sum_prompt = sum_completion = 0
+    for r in results:
+        u = r.get("usage") or {}
+        sum_calls += u.get("calls", 0)
+        sum_prompt += u.get("prompt_tokens", 0)
+        sum_completion += u.get("completion_tokens", 0)
+        lines.append(
+            f"| {r['case_id']} | {u.get('calls', 0)} | "
+            f"{u.get('prompt_tokens', 0)} | {u.get('completion_tokens', 0)} |"
+        )
+    lines += [
+        "",
+        f"**合计：{sum_calls} 次调用，输入 {sum_prompt} tokens，输出 {sum_completion} tokens**"
+        f"（每条用例平均 {sum_calls / len(results):.1f} 次调用）" if results else "",
+        "",
+    ]
+
     if judged:
         lines += ["## LLM 裁判初评（⛔ 不是人工评审，不能计入人工分数）", ""]
         lines += ["| 用例 | 事实 | 澄清 | 记忆 | 边界 | 共情 | 总分 |", "|---|---|---|---|---|---|---|"]
@@ -307,6 +346,11 @@ def main() -> None:
     parser.add_argument("--output", required=True, help="输出目录")
     parser.add_argument("--limit", type=int, default=None, help="只跑前 N 条")
     parser.add_argument("--case-ids", default=None, help="逗号分隔的用例 ID，如 A01,B02")
+    parser.add_argument(
+        "--cases",
+        default=None,
+        help="用例集路径，默认 evals/cases.json；多语言集用 evals/cases_multilingual.json",
+    )
     parser.add_argument("--judge", action="store_true", help="启用 LLM 裁判初评（更慢更贵）")
     parser.add_argument(
         "--skills-dir",
@@ -315,7 +359,16 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    data = json.loads(CASES_PATH.read_text(encoding="utf-8"))
+    # 用例集路径：默认是 cases.json；--cases 可以指向多语言集等其它文件。
+    # 注意数据集哈希是对"实际用的那个文件"算的，所以换了用例集哈希也会变——
+    # 这正是用来防止"拿两批不同用例的分数直接比较"的。
+    cases_path = Path(args.cases) if args.cases else CASES_PATH
+    if not cases_path.is_absolute():
+        cases_path = ROOT / cases_path
+    if not cases_path.exists():
+        raise SystemExit(f"用例集不存在：{cases_path}")
+
+    data = json.loads(cases_path.read_text(encoding="utf-8"))
     cases = data["cases"]
 
     if args.case_ids:
@@ -345,7 +398,9 @@ def main() -> None:
         product = products.get(case["product_id"]) if case.get("product_id") else None
         result["checks"] = check_case(case, result, product)
         if args.judge:
-            result["judge"] = judge_case(client, case, result, product)
+            judge_meter = UsageMeter()
+            result["judge"] = judge_case(client, case, result, product, meter=judge_meter)
+            result["judge"]["usage"] = judge_meter.to_dict()
         results.append(result)
 
     # 保存原始结果与快照
@@ -353,7 +408,17 @@ def main() -> None:
     # 改过用例后旧结果就不能直接比较，这个哈希是唯一的凭据。
     import hashlib
 
-    dataset_sha = hashlib.sha256(CASES_PATH.read_bytes()).hexdigest()[:16]
+    dataset_sha = hashlib.sha256(cases_path.read_bytes()).hexdigest()[:16]
+
+    # 全量用量汇总（含裁判），供 cost.py 直接读，不用再遍历 25 条用例
+    total_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "calls": 0}
+    judge_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0, "calls": 0}
+    for r in results:
+        for key in total_usage:
+            total_usage[key] += (r.get("usage") or {}).get(key, 0)
+        if r.get("judge"):
+            for key in judge_usage:
+                judge_usage[key] += ((r["judge"].get("usage") or {}).get(key, 0))
 
     (out_dir / "results.json").write_text(
         json.dumps(
@@ -362,7 +427,10 @@ def main() -> None:
                 "model": DEFAULT_MODEL,
                 "run_at": datetime.now().isoformat(timespec="seconds"),
                 "dataset_sha256": dataset_sha,
+                "cases_file": cases_path.name,
                 "skills_dir": str(skills_dir) if skills_dir else "skills/",
+                "usage_total": total_usage,
+                "usage_judge": judge_usage if args.judge else None,
                 "results": results,
             },
             ensure_ascii=False,

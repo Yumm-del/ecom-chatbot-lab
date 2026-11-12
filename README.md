@@ -33,6 +33,10 @@
 | **评测层** | 25 条场景用例 × 5 维 0–2 分 rubric，含"该转人工"与"数据缺失"的对抗用例 |
 | **验证层** | v1 / v2 / v3 三版对照实验，真实调用模型，保留原始响应 |
 | **迭代层** | v2 评测发现 4 处缺陷 → 只改 SKILL.md → v3 重新验证 |
+| **决策层** | 测出问题之后怎么办：[PRIORITY.md](PRIORITY.md) 排优先级、[METRICS.md](METRICS.md) 映射业务指标、[COST.md](COST.md) 算成本账、[MULTILINGUAL.md](MULTILINGUAL.md) 测多语言 |
+
+> **评分只是中间产物。** 一个只交付"分数"的评测，在评审眼里等于没做完——
+> 后面四份文档才是把"哪里错了"变成"先修哪个、要花多少钱、修完怎么验证"的部分。
 
 ---
 
@@ -42,6 +46,10 @@
 ecom-chatbot-lab/
 ├── DESIGN.md                 # 设计文档：badcase → 问题类型 → Skill → 评测
 ├── REPORT.md                 # 实验结果、迭代闭环、实验缺陷、上线缺口
+├── PRIORITY.md               # badcase 优先级矩阵：影响面 × 修复成本
+├── METRICS.md                # 质量分 → 业务指标映射、埋点清单、A/B 设计
+├── COST.md                   # 成本核算：两段式架构贵多少、怎么压回去
+├── MULTILINGUAL.md           # 多语言测试：Taglish / 印尼语下的失效方式
 ├── data/
 │   ├── products.json         # 模拟商品库（含结构化尺码表）
 │   └── badcases.md           # 公开 badcase 来源与抽象过程
@@ -56,12 +64,17 @@ ecom-chatbot-lab/
 │   ├── memory.py             # 三层记忆模型
 │   ├── prompts.py            # v1 / v2 两套 system prompt
 │   └── agent.py              # 主循环：槽位判断 → Skill 路由 → 生成
+├── tests/
+│   └── test_slots.py         # 槽位抽取回归测试（记忆层入口，错一次污染全部对话）
 └── evals/
     ├── cases.json            # 25 条评测用例
+    ├── cases_multilingual.json  # 6 条 Taglish / 印尼语用例
     ├── rubric.md             # 5 维 0–2 分评分标准
-    ├── run.py                # 运行器：跑对话、存原始响应与快照
+    ├── annotation-guide.md   # 人工标注规范：流程、裁决判例、Kappa 一致性
+    ├── run.py                # 运行器：跑对话、存原始响应与 token 用量
     ├── judge_saved.py        # 对已存结果做 LLM 裁判初评（不重跑对话）
     ├── compare.py            # 多版本横向对比
+    ├── cost.py               # token 用量 → 成本，含优化杠杆的敏感性分析
     └── runs/                 # 每次运行的 report.md + results.json
 ```
 
@@ -85,6 +98,16 @@ python -m evals.judge_saved --input evals/runs/v3
 
 # 横向对比
 python -m evals.compare evals/runs/v1 evals/runs/v2 evals/runs/v3
+
+# 多语言用例（Taglish / 印尼语）
+python -m evals.run --version v3 --cases evals/cases_multilingual.json --judge \
+    --output evals/runs/multilingual/v3
+
+# 成本核算（token → 钱，含优化杠杆）
+python -m evals.cost evals/runs/cost/v1 evals/runs/cost/v2 evals/runs/cost/v3
+
+# 记忆层回归测试
+python -m unittest discover tests
 ```
 
 ---
@@ -111,6 +134,16 @@ python -m evals.compare evals/runs/v1 evals/runs/v2 evals/runs/v3
 这指向下一步方向——不是继续加规则，而是设计"什么时候把依据折叠起来说"。
 
 完整分析、剩余问题、实验设计缺陷见 [REPORT.md](REPORT.md)。
+
+---
+
+## 三个"分数之外"的结论
+
+| 结论 | 出处 |
+|---|---|
+| **两段式架构的成本是朴素版的 5 倍**，因为每一轮都重发整份 Skill 正文（实测占 exec 输入 85%）。加缓存 + 路由换规则能压到 2.3 倍 | [COST.md](COST.md) |
+| **换一批语料，分数会骗人**：多语言集裁判分 9.67，比中文集的 9.00 还高，但真实情况是模型给菲律宾用户回了整段中文、把印尼语 `uk`（尺码）读成了英国尺码并编造了"UK 10–12" | [MULTILINGUAL.md](MULTILINGUAL.md) |
+| **规则化到一定程度会反噬**：唯一低于基线的维度是"表达共情"（1.56 → 1.44），而它恰好是修复成本最低的那一类 | [PRIORITY.md](PRIORITY.md) |
 
 > 本项目只验证"给定模拟商品数据下的对话行为"，**不验证**真实平台的效果、真实用户满意度或线上指标。
 > 所有分数仅用于本项目内部版本间比较，不代表模型通用准确率。

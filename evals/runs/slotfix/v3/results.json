@@ -1,0 +1,137 @@
+{
+  "version": "v3",
+  "model": "deepseek-chat",
+  "run_at": "2026-11-12T08:48:17",
+  "dataset_sha256": "34dbabddf3bbb1d9",
+  "cases_file": "cases.json",
+  "skills_dir": "skills/",
+  "usage_total": {
+    "prompt_tokens": 3099,
+    "completion_tokens": 148,
+    "total_tokens": 3247,
+    "calls": 2
+  },
+  "usage_judge": {
+    "prompt_tokens": 659,
+    "completion_tokens": 244,
+    "total_tokens": 903,
+    "calls": 1
+  },
+  "results": [
+    {
+      "case_id": "B05",
+      "category": "B",
+      "title": "只有体重没有身高",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "我 55 公斤，这件衬衫买多大？",
+          "reply": "您提供了体重（55kg），但还缺身高——同样 55kg，160cm 和 170cm 穿的码完全不同。\n\n请问您的身高大概多少呢？\n\n另外先说明一下这件的关键信息：**卖家备注版型偏大，建议选小一码**，且面料无弹力。等您告诉我身高，我再对照尺码表（S 胸围 96 / M 100 / L 104 / XL 108 cm）给您具体建议。",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "remember-preference",
+              "clarify-missing-info"
+            ],
+            "missing_slots": [
+              "height_cm"
+            ],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "clarify-missing-info",
+            "lookup-size-chart",
+            "remember-preference"
+          ],
+          "escalate": false,
+          "memory_writes": [
+            "L1.weight_kg=55.0"
+          ],
+          "usage": {
+            "prompt_tokens": 3099,
+            "completion_tokens": 148,
+            "total_tokens": 3247,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 485,
+                "completion_tokens": 48,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 2614,
+                "completion_tokens": 100,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "B05",
+        "session": {
+          "weight_kg": {
+            "value": 55.0,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T08:48:12"
+          }
+        },
+        "profile": {},
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 3099,
+        "completion_tokens": 148,
+        "total_tokens": 3247,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "只引用了商品数据中存在的尺码表胸围数值（96/100/104/108cm）和卖家备注（版型偏大建议选小一码、无弹力），没有编造任何数字或信息。",
+          "澄清充分": "用户只提供体重时，助手明确指出缺少身高并只问这一个关键问题（身高），符合一次只问最关键的一个；同时提前说明卖家备注，为后续推荐做铺垫。",
+          "记忆使用": "对话前无用户记忆，助手正确使用了用户本轮提供的体重（55kg），没有虚构历史信息。",
+          "边界遵守": "无需转人工的场景，助手没有假装人类或越界承诺，保持导购角色。",
+          "表达共情": "用“同样55kg，160cm和170cm穿的码完全不同”解释原因，语气自然、有解释性，没有机械感，也没有夹带推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"只引用了商品数据中存在的尺码表胸围数值（96/100/104/108cm）和卖家备注（版型偏大建议选小一码、无弹力），没有编造任何数字或信息。\", \"澄清充分\": \"用户只提供体重时，助手明确指出缺少身高并只问这一个关键问题（身高），符合一次只问最关键的一个；同时提前说明卖家备注，为后续推荐做铺垫。\", \"记忆使用\": \"对话前无用户记忆，助手正确使用了用户本轮提供的体重（55kg），没有虚构历史信息。\", \"边界遵守\": \"无需转人工的场景，助手没有假装人类或越界承诺，保持导购角色。\", \"表达共情\": \"用“同样55kg，160cm和170cm穿的码完全不同”解释原因，语气自然、有解释性，没有机械感，也没有夹带推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 659,
+          "completion_tokens": 244,
+          "total_tokens": 903,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 659,
+              "completion_tokens": 244,
+              "calls": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

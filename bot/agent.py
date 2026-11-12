@@ -123,10 +123,23 @@ _HEIGHT_PATTERNS = [
     r"1[\.点](\d{2})\s*(?:m|米)?",
 ]
 
+# 体重单位列表：(正则, 是否需要把"斤"换算成公斤)
+#
+# ⚠️ 两个踩过的坑，改这个列表前务必先看：
+#
+# 坑 1：「斤」的模式必须排在最前面。
+#   如果先跑 `体重\s*(\d{2,3})` 这种不带单位的模式，"我体重120斤" 会被匹配成
+#   "体重120"，group(0) 里根本没有"斤"字，后面就再也没机会除以 2 了。
+#
+# 坑 2：不能用 `"斤" in 匹配文本` 判断单位。
+#   "公斤" 里面就含"斤"字，会把"60公斤"换算成 30kg——
+#   而且是静默的，用户永远不知道自己的体重被砍了一半。
+#   所以这里改成给每个模式配一个显式的布尔标志，不靠字符串猜测。
 _WEIGHT_PATTERNS = [
-    r"体重\s*(\d{2,3})\s*(?:kg|公斤|千克)?",
-    r"(\d{2,3})\s*(?:kg|公斤|千克)",
-    r"(\d{2,3})\s*斤",
+    (r"(\d{2,3})\s*斤", True),                       # 120斤 = 60kg
+    (r"体重\s*(\d{2,3})\s*(?:kg|公斤|千克)", False),
+    (r"(\d{2,3})\s*(?:kg|公斤|千克)", False),
+    (r"体重\s*(\d{2,3})", False),                    # 只说了"体重60"，按 kg 处理
 ]
 
 
@@ -154,15 +167,16 @@ def extract_slots(message: str) -> dict:
                 slots["height_cm"] = round(value)
                 break
 
-    for pat in _WEIGHT_PATTERNS:
+    for pat, is_jin in _WEIGHT_PATTERNS:
         m = re.search(pat, message)
-        if m:
-            value = float(m.group(1))
-            if "斤" in m.group(0):
-                value = value / 2  # 1 斤 = 0.5 kg
-            if 30 <= value <= 150:
-                slots["weight_kg"] = round(value, 1)
-                break
+        if not m:
+            continue
+        value = float(m.group(1))
+        if is_jin:
+            value = value / 2  # 1 斤 = 0.5 kg
+        if 30 <= value <= 150:
+            slots["weight_kg"] = round(value, 1)
+            break
 
     return slots
 
@@ -185,11 +199,82 @@ def detect_fit_feedback(message: str) -> str | None:
 # 模型调用
 # ------------------------------------------------------------
 
-def chat(client, messages: list[dict], temperature: float = 0.0) -> str:
+class UsageMeter:
+    """token 用量累加器。
+
+    **目的**：把每次模型调用的 token 消耗记录下来，支撑成本核算。
+
+    **为什么不用全局变量**：全局变量在并发下会串数据，而且测试时无法隔离。
+    这里做成一个可以随意 new 的小对象，谁需要谁创建，用完就丢。
+
+    **为什么要分 stage**：v2/v3 有两段调用（路由 + 执行）。
+    只看总数不知道钱花在哪一段，就没法做"路由换小模型"这类优化决策。
+    """
+
+    def __init__(self) -> None:
+        self.prompt_tokens = 0        # 输入 token（system + 历史 + 用户消息）
+        self.completion_tokens = 0    # 输出 token（模型生成的回复）
+        self.total_tokens = 0
+        self.calls = 0                # 调用次数，乘价格时要用
+        self.by_stage: dict[str, dict] = {}
+
+    def add(self, usage, stage: str = "other") -> None:
+        """记录一次调用的用量。
+
+        参数：
+            usage : OpenAI SDK 返回的 usage 对象（可能是 None）
+            stage : "router" / "exec" / "judge" 等，用于拆分成本
+
+        为什么要 getattr 兜底：
+        部分 OpenAI 兼容服务不返回 usage 字段，直接 .prompt_tokens 会 AttributeError。
+        """
+        if usage is None:
+            return
+        prompt = getattr(usage, "prompt_tokens", 0) or 0
+        completion = getattr(usage, "completion_tokens", 0) or 0
+        total = getattr(usage, "total_tokens", 0) or (prompt + completion)
+
+        self.prompt_tokens += prompt
+        self.completion_tokens += completion
+        self.total_tokens += total
+        self.calls += 1
+
+        bucket = self.by_stage.setdefault(
+            stage, {"prompt_tokens": 0, "completion_tokens": 0, "calls": 0}
+        )
+        bucket["prompt_tokens"] += prompt
+        bucket["completion_tokens"] += completion
+        bucket["calls"] += 1
+
+    def to_dict(self) -> dict:
+        """导出成可直接塞进 JSON 的字典。"""
+        return {
+            "prompt_tokens": self.prompt_tokens,
+            "completion_tokens": self.completion_tokens,
+            "total_tokens": self.total_tokens,
+            "calls": self.calls,
+            "by_stage": self.by_stage,
+        }
+
+
+def chat(
+    client,
+    messages: list[dict],
+    temperature: float = 0.0,
+    meter: UsageMeter | None = None,
+    stage: str = "other",
+) -> str:
     """单次模型调用。
 
     温度固定为 0，是为了让评测结果尽量可复现。
     即使如此，模型输出仍可能波动——这种波动本身就是需要记录的现象。
+
+    参数：
+        meter : 传入 UsageMeter 就会记录本次用量；传 None 时行为与旧版完全一致。
+        stage : 这次调用属于哪一段（router / exec / judge），用于成本拆分。
+
+    返回：
+        模型回复的纯文本（空回复返回空字符串）。
     """
     resp = client.chat.completions.create(
         model=DEFAULT_MODEL,
@@ -197,6 +282,11 @@ def chat(client, messages: list[dict], temperature: float = 0.0) -> str:
         temperature=temperature,
         max_tokens=800,
     )
+
+    # 用量记录放在取内容之前，保证即使回复为空也照常记账
+    if meter is not None:
+        meter.add(getattr(resp, "usage", None), stage=stage)
+
     return resp.choices[0].message.content or ""
 
 
@@ -222,13 +312,20 @@ def _parse_json(text: str) -> dict:
 # 两个版本的单轮对话
 # ------------------------------------------------------------
 
-def v1_turn(client, user_message: str, product: dict | None, history: list[dict]) -> dict:
+def v1_turn(
+    client,
+    user_message: str,
+    product: dict | None,
+    history: list[dict],
+    meter: UsageMeter | None = None,
+) -> dict:
     """朴素版本：一次调用，无路由、无记忆、无 Skill。"""
     system = V1_SYSTEM.format(products_text=render_product(product))
     messages = [{"role": "system", "content": system}, *history]
     messages.append({"role": "user", "content": user_message})
 
-    reply = chat(client, messages)
+    # v1 只有一段调用，stage 统一记 exec（和 v2 的执行段可比）
+    reply = chat(client, messages, meter=meter, stage="exec")
     return {"reply": reply, "route": None, "skills": [], "escalate": None, "memory_writes": []}
 
 
@@ -239,8 +336,13 @@ def v2_turn(
     memory: UserMemory,
     history: list[dict],
     skills_dir: Path | None = None,
+    meter: UsageMeter | None = None,
 ) -> dict:
-    """完整版本：先写记忆 → 再路由 → 只加载选中 Skill → 生成回复。"""
+    """完整版本：先写记忆 → 再路由 → 只加载选中 Skill → 生成回复。
+
+    meter 会分别记录 router 和 exec 两段的用量——这是成本核算的关键，
+    因为"能不能把路由换成小模型"取决于路由段占了多大比例。
+    """
     # --- 步骤 1：把用户本轮提供的信息写进记忆 ---
     memory_writes: list[str] = []
     notices: list[str] = []
@@ -272,6 +374,8 @@ def v2_turn(
             {"role": "system", "content": router_prompt},
             {"role": "user", "content": user_message},
         ],
+        meter=meter,
+        stage="router",
     )
     route = _parse_json(route_raw)
 
@@ -300,7 +404,7 @@ def v2_turn(
     messages = [{"role": "system", "content": exec_prompt}, *history]
     messages.append({"role": "user", "content": user_message})
 
-    reply = chat(client, messages)
+    reply = chat(client, messages, meter=meter, stage="exec")
 
     return {
         "reply": reply,

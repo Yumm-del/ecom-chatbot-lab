@@ -1,0 +1,129 @@
+{
+  "_meta": {
+    "description": "6 条东南亚多语言用例，用来测现有链路在真实语言混用下的表现",
+    "why": "主用例集全是标准中文。真实 Shopee 场景是 Taglish（他加禄语+英语）、印尼语缩写、极短消息。中文写得再好的规则，不代表能吃下这些。",
+    "design": "与主用例集同构：每条用例只有 id / category / title / product_id / memory / turns / expect / failure_mode 八个字段，可以直接用 evals/run.py --cases 跑。",
+    "known_limitation": "自动检查（check_case）的关键词是中文的：_SIZE_RE 只认“码”，_ESCALATE_MARKERS 只认“人工/转接”，槽位抽取只认“身高/体重/kg/公斤”。所以这份用例集上，自动检查的通过率会被系统性低估——这本身就是要报告的结论之一（评测工具自带语言偏置），不要当作用例写错了。",
+    "categories": {
+      "A": "信息完整时的正常推荐",
+      "B": "信息缺失，应先澄清",
+      "C": "数据缺失 / 边界，不应硬答",
+      "D": "多轮 / 记忆，应跨轮使用",
+      "E": "应转人工"
+    },
+    "languages": [
+      "Taglish（他加禄语 + 英语，菲律宾）",
+      "Bahasa Indonesia（印尼语）",
+      "混合缩写（印尼电商常用：uk=ukuran 尺码，kak=称呼）"
+    ]
+  },
+  "cases": [
+    {
+      "id": "ML-A01",
+      "category": "A",
+      "title": "Taglish 提问 + 信息完整，应正常给码",
+      "product_id": "p_003",
+      "memory": {
+        "profile": {
+          "height_cm": { "value": 165, "source": "user_stated", "confidence": 0.9 },
+          "weight_kg": { "value": 60, "source": "user_stated", "confidence": 0.9 }
+        }
+      },
+      "turns": ["Hi po! 165cm po ako, 60kg. Anong size po ang bagay sa akin?"],
+      "expect": {
+        "should_ask": false,
+        "should_escalate": false,
+        "expected_size": "M",
+        "must_cite_cm": true
+      },
+      "failure_mode": "baseline"
+    },
+    {
+      "id": "ML-B01",
+      "category": "B",
+      "title": "印尼语只问“能不能穿”，缺身高体重，应先澄清",
+      "product_id": "p_001",
+      "memory": {},
+      "turns": ["Kak, ini baju muat buat aku nggak?"],
+      "expect": {
+        "should_ask": true,
+        "should_escalate": false,
+        "ask_height": true,
+        "ask_weight": true
+      },
+      "failure_mode": "F2"
+    },
+    {
+      "id": "ML-C01",
+      "category": "C",
+      "title": "印尼语问无尺码表商品的 L 码，不应编造，应说明并转接",
+      "product_id": "p_010",
+      "memory": {
+        "profile": {
+          "height_cm": { "value": 165, "source": "user_stated", "confidence": 0.9 },
+          "weight_kg": { "value": 60, "source": "user_stated", "confidence": 0.9 }
+        }
+      },
+      "turns": ["Kak ini ukuran L ada? Muat buat 165cm 60kg?"],
+      "expect": {
+        "should_ask": false,
+        "should_escalate": true,
+        "must_not_fabricate_size": true,
+        "must_say_data_missing": true
+      },
+      "failure_mode": "F1"
+    },
+    {
+      "id": "ML-D01",
+      "category": "D",
+      "title": "印尼语说体重变了，应使用新值而不是旧记忆",
+      "product_id": "p_005",
+      "memory": {
+        "profile": {
+          "height_cm": { "value": 165, "source": "user_stated", "confidence": 0.9 },
+          "weight_kg": { "value": 60, "source": "user_stated", "confidence": 0.9 }
+        }
+      },
+      "turns": [
+        "Kak, celana ini masih muat ukuran M nggak?",
+        "Beratku sekarang 65 kg, naik dari sebelumnya"
+      ],
+      "expect": {
+        "should_ask": false,
+        "should_escalate": false,
+        "must_use_memory": true,
+        "must_use_new_weight": true,
+        "must_mention_update": true
+      },
+      "failure_mode": "F3"
+    },
+    {
+      "id": "ML-E01",
+      "category": "E",
+      "title": "印尼语明确要真人，应立即转接，不再追问",
+      "product_id": null,
+      "memory": {},
+      "turns": ["Saya mau ngomong sama orang, bukan bot. Tolong sambungkan ke CS."],
+      "expect": {
+        "should_escalate": true,
+        "must_not_ask_before_escalate": true,
+        "must_not_pretend_human": true
+      },
+      "failure_mode": "F4"
+    },
+    {
+      "id": "ML-F01",
+      "category": "A",
+      "title": "极短缩写消息（uk L + 身高体重斜杠写法），应能解析",
+      "product_id": "p_004",
+      "memory": {},
+      "turns": ["uk L ada? 165/60"],
+      "expect": {
+        "should_ask": false,
+        "should_escalate": false,
+        "must_cite_cm": true
+      },
+      "failure_mode": "baseline"
+    }
+  ]
+}
