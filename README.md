@@ -87,9 +87,14 @@ pip install -r requirements.txt
 cp .env.example .env          # 填入 DEEPSEEK_API_KEY
 
 # 三个版本（用同一版用例）
+# 注意 --reply-language zh：v2/v3 的冻结结果是在"永远中文"的 prompt 下跑出来的，
+# 不加这个参数会用新的 auto 策略（跟随用户语言），复现不出原来的分数。
 python -m evals.run --version v1 --output evals/runs/v1
-python -m evals.run --version v2 --skills-dir skills_v2_snapshot --output evals/runs/v2
-python -m evals.run --version v3 --output evals/runs/v3
+python -m evals.run --version v2 --skills-dir skills_v2_snapshot --reply-language zh --output evals/runs/v2
+python -m evals.run --version v3 --reply-language zh --output evals/runs/v3
+
+# v4：v3 + 语言策略修正（默认 auto，跟随用户语言）
+python -m evals.run --version v4 --judge --output evals/runs/v4
 
 # 打分（对已存结果，不重跑对话）
 python -m evals.judge_saved --input evals/runs/v1
@@ -101,7 +106,9 @@ python -m evals.compare evals/runs/v1 evals/runs/v2 evals/runs/v3
 
 # 多语言用例（Taglish / 印尼语）
 python -m evals.run --version v3 --cases evals/cases_multilingual.json --judge \
-    --output evals/runs/multilingual/v3
+    --reply-language zh --output evals/runs/multilingual/v3
+python -m evals.run --version v4 --cases evals/cases_multilingual.json --judge \
+    --output evals/runs/multilingual/v4
 
 # 成本核算（token → 钱，含优化杠杆）
 python -m evals.cost evals/runs/cost/v1 evals/runs/cost/v2 evals/runs/cost/v3
@@ -116,22 +123,25 @@ python -m unittest discover tests
 
 同一个模型（deepseek-chat），只改设计：
 
-| 维度 | v1 基线 | v2 第一版设计 | v3 迭代后 |
-|---|---|---|---|
-| **总分（/10）** | **7.80** | **8.64** | **9.00** |
-| 记忆使用 | 1.20 | 1.88 | **1.96** |
-| 边界遵守 | 1.68 | **1.96** | **2.00** |
-| 事实准确 | 1.96 | 1.88 | **2.00** |
-| 澄清充分 | 1.40 | 1.56 | 1.60 |
-| 表达共情 | **1.56** | 1.36 | 1.44 |
+| 维度 | v1 基线 | v2 第一版设计 | v3 迭代后 | 重复运行噪声 |
+|---|---|---|---|---|
+| **总分（/10）** | **7.80** | **8.64** | **9.00** | 0.08 / 0.12 |
+| 记忆使用 | 1.20 | 1.88 | **1.96** | 0.08 ✅ |
+| 边界遵守 | 1.68 | **1.96** | **2.00** | 0.04 ✅ |
+| 事实准确 | 1.96 | 1.88 | **2.00** | 0.04 ✅ |
+| 澄清充分 | 1.40 | 1.56 | 1.60 | 0.08 ❓ |
+| 表达共情 | 1.56 | 1.36 | 1.44 | 0.08 ❌ 不可下结论 |
 
-**两个关键点**：
+**三个关键点**：
 
 1. **提升精准落在设计针对的维度**（记忆、边界），而不是全面普涨——这比"全面提升"更能说明因果。
 2. **v2 → v3 只改了 SKILL.md，Prompt 和数据一字未动，还涨了 0.36**——说明规则层本身是可迭代的。
+3. **补做了重复运行，然后撤回了自己的一条结论**：原来说"规则化伤共情"（1.56 → 1.44），
+   复跑后 v1 与 v3 的区间**重叠**，这个差值就是测量误差本身。
+   同样，A 类用例的噪声是 1.20，和它的提升是同一量级——**没有任何小于噪声的差值可以写进结论**。
 
-**唯一低于基线的是"表达共情"**：规则越细，话越像说明书。
-这指向下一步方向——不是继续加规则，而是设计"什么时候把依据折叠起来说"。
+> **分课别的结果不放在这里**：每类只有 5 条用例，一条用例波动 2 分，类别均分就动 0.4。
+> 完整的分类别结果和重复运行噪声见 [REPORT.md](REPORT.md) §2.2。
 
 完整分析、剩余问题、实验设计缺陷见 [REPORT.md](REPORT.md)。
 
@@ -142,8 +152,8 @@ python -m unittest discover tests
 | 结论 | 出处 |
 |---|---|
 | **两段式架构的成本是朴素版的 5 倍**，因为每一轮都重发整份 Skill 正文（实测占 exec 输入 85%）。加缓存 + 路由换规则能压到 2.3 倍 | [COST.md](COST.md) |
-| **换一批语料，分数会骗人**：多语言集 v3 拿 9.67 分、v1 只有 8.17；但 v1 六条全部用用户的语言回复，v3 只有一条。根因是 prompt 第一行写着"请用中文回答用户"——**删掉一行字就解决的事，被 5 维 rubric 完整地漏掉了** | [MULTILINGUAL.md](MULTILINGUAL.md) |
-| **规则化到一定程度会反噬**：唯一低于基线的维度是"表达共情"（1.56 → 1.44），而它恰好是修复成本最低的那一类 | [PRIORITY.md](PRIORITY.md) |
+| **换一批语料，分数会骗人**：多语言集 v3 拿 9.67 分、v1 只有 8.17；但 v1 六条全部用用户的语言回复，v3 只有一条。根因是 prompt 第一行写着"请用中文回答用户"。改成参数后恢复到 4/6（v4），剩下 2 条是 Skill 的输出模板仍用中文写死——**5 维 rubric 完整地漏掉了"用户能不能看懂"** | [MULTILINGUAL.md](MULTILINGUAL.md) |
+| **没有重复运行，0.1 量级的差值都不算数**：共情维度上 v1 区间 [1.52, 1.56] 与 v3 区间 [1.44, 1.52] 重叠，原来"规则化伤共情"的结论已撤回；A 类的运行间噪声（1.20）与它 v1→v3 的提升（1.60）是同一量级 | [REPORT.md](REPORT.md) §2.2 / §4 发现 4 |
 
 > 本项目只验证"给定模拟商品数据下的对话行为"，**不验证**真实平台的效果、真实用户满意度或线上指标。
 > 所有分数仅用于本项目内部版本间比较，不代表模型通用准确率。

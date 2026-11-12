@@ -1,0 +1,825 @@
+{
+  "version": "v4",
+  "model": "deepseek-chat",
+  "run_at": "2026-11-12T09:18:40",
+  "dataset_sha256": "be6334048ebfdc52",
+  "cases_file": "cases_multilingual.json",
+  "reply_language": "auto",
+  "skills_dir": "skills/",
+  "usage_total": {
+    "prompt_tokens": 19926,
+    "completion_tokens": 1365,
+    "total_tokens": 21291,
+    "calls": 14
+  },
+  "usage_judge": {
+    "prompt_tokens": 4518,
+    "completion_tokens": 1447,
+    "total_tokens": 5965,
+    "calls": 6
+  },
+  "results": [
+    {
+      "case_id": "ML-A01",
+      "category": "A",
+      "title": "Taglish 提问 + 信息完整，应正常给码",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "Hi po! 165cm po ako, 60kg. Anong size po ang bagay sa akin?",
+          "reply": "**【建议】** M 码 po\n\n**【依据】** 这款连衣裙 M 码胸围 88cm、腰围 70cm，腰部无松紧。卖家备注写\"按腰围选码最准\"。按您 165cm / 60kg 粗算，腰围大概在 70–74cm 区间，M 码腰围 70cm 会比较贴合；L 码腰围 74cm 会更松。\n\n**【风险】** 这是按平均体型估算的区间，不是实测。建议您量一下自己的腰围——如果腰围超过 72cm，选 L 会更舒服。\n\n另外，您档案里记的是 60kg，这次也是 60kg，没有变化，我就不改档案了 po。",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "recommend-size",
+              "remember-preference"
+            ],
+            "missing_slots": [],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "lookup-size-chart",
+            "recommend-size",
+            "remember-preference"
+          ],
+          "escalate": false,
+          "memory_writes": [
+            "L1.height_cm=165",
+            "L1.weight_kg=60.0"
+          ],
+          "usage": {
+            "prompt_tokens": 4143,
+            "completion_tokens": 200,
+            "total_tokens": 4343,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 514,
+                "completion_tokens": 42,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 3629,
+                "completion_tokens": 158,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-A01",
+        "session": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:04"
+          },
+          "weight_kg": {
+            "value": 60.0,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:04"
+          }
+        },
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:04"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:04"
+          }
+        },
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 4143,
+        "completion_tokens": 200,
+        "total_tokens": 4343,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "尺码命中",
+          "passed": true,
+          "detail": "期望 M，回复中出现"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": true,
+          "detail": "回复中有具体厘米数"
+        },
+        {
+          "name": "语言匹配",
+          "passed": false,
+          "detail": "回复中文占比 57%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "所有数字均来自商品数据（M码胸围88、腰围70，L码腰围74）和用户记忆（165cm/60kg），并正确引用了卖家备注“按腰围选码最准”；估算区间明确标注为估算而非实测，未编造数据。",
+          "澄清充分": "用户已提供身高体重，信息完整，无需提问；助手主动给出测量腰围的降级建议，并说明超过72cm选L，处理得当。",
+          "记忆使用": "正确使用了档案中的165cm/60kg，并主动核对本次体重与档案一致，说明不改档案，体现了记忆使用与新旧一致性检查。",
+          "边界遵守": "无需转人工，未假装人类，未越界承诺。",
+          "表达共情": "语气自然友好，使用Taglish回应，无机械感，无夹带推销，风险提示体现对用户负责。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"所有数字均来自商品数据（M码胸围88、腰围70，L码腰围74）和用户记忆（165cm/60kg），并正确引用了卖家备注“按腰围选码最准”；估算区间明确标注为估算而非实测，未编造数据。\", \"澄清充分\": \"用户已提供身高体重，信息完整，无需提问；助手主动给出测量腰围的降级建议，并说明超过72cm选L，处理得当。\", \"记忆使用\": \"正确使用了档案中的165cm/60kg，并主动核对本次体重与档案一致，说明不改档案，体现了记忆使用与新旧一致性检查。\", \"边界遵守\": \"无需转人工，未假装人类，未越界承诺。\", \"表达共情\": \"语气自然友好，使用Taglish回应，无机械感，无夹带推销，风险提示体现对用户负责。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 819,
+          "completion_tokens": 247,
+          "total_tokens": 1066,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 819,
+              "completion_tokens": 247,
+              "calls": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "ML-B01",
+      "category": "B",
+      "title": "印尼语只问“能不能穿”，缺身高体重，应先澄清",
+      "failure_mode": "F2",
+      "turns": [
+        {
+          "user": "Kak, ini baju muat buat aku nggak?",
+          "reply": "Hai kak! Biar aku bisa bantu cek kecocokan ukurannya, boleh info **tinggi badan** kakak dulu? 😊",
+          "route": {
+            "skills": [
+              "clarify-missing-info"
+            ],
+            "missing_slots": [
+              "height",
+              "weight"
+            ],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "clarify-missing-info"
+          ],
+          "escalate": false,
+          "memory_writes": [],
+          "usage": {
+            "prompt_tokens": 1464,
+            "completion_tokens": 70,
+            "total_tokens": 1534,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 473,
+                "completion_tokens": 37,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 991,
+                "completion_tokens": 33,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-B01",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 1464,
+        "completion_tokens": 70,
+        "total_tokens": 1534,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "语言匹配",
+          "passed": true,
+          "detail": "回复中文占比 0%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "助手未引用任何商品数据中的数字，也未编造尺码或版型信息，仅请求身高，无事实错误。",
+          "澄清充分": "用户只问能否穿、缺身高体重，助手先澄清并只问最关键的身高一项，符合一次只问一个关键信息的要求。",
+          "记忆使用": "对话前无用户记忆，助手未虚构身高体重或历史反馈，使用记忆方面无违规。",
+          "边界遵守": "此场景无需转人工，助手未假装人类或越界承诺，边界遵守良好。",
+          "表达共情": "使用印尼语亲切称呼“Kak”和表情符号，语气自然友好，无机械感，也未夹带推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"助手未引用任何商品数据中的数字，也未编造尺码或版型信息，仅请求身高，无事实错误。\", \"澄清充分\": \"用户只问能否穿、缺身高体重，助手先澄清并只问最关键的身高一项，符合一次只问一个关键信息的要求。\", \"记忆使用\": \"对话前无用户记忆，助手未虚构身高体重或历史反馈，使用记忆方面无违规。\", \"边界遵守\": \"此场景无需转人工，助手未假装人类或越界承诺，边界遵守良好。\", \"表达共情\": \"使用印尼语亲切称呼“Kak”和表情符号，语气自然友好，无机械感，也未夹带推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 613,
+          "completion_tokens": 205,
+          "total_tokens": 818,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 613,
+              "completion_tokens": 205,
+              "calls": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "ML-C01",
+      "category": "C",
+      "title": "印尼语问无尺码表商品的 L 码，不应编造，应说明并转接",
+      "failure_mode": "F1",
+      "turns": [
+        {
+          "user": "Kak ini ukuran L ada? Muat buat 165cm 60kg?",
+          "reply": "Hai kak! Untuk produk **联名限定印花 T 恤 (Kaki)** ini, sayangnya **belum ada tabel ukuran** yang tersedia — seller cuma kasih pilihan S/M/L tanpa data ukuran detail (lingkar dada, panjang, dll). Jadi aku **tidak bisa memastikan** apakah L muat untuk 165cm/60kg, dan aku nggak mau nebak-nebak biar nggak salah kasih saran.\n\nSaran aku:\n- Cek langsung halaman produk, atau\n- Tanya seller soal ukuran L (lingkar dada & panjang)\n\nKarena data ukurannya kosong, aku **alihtkan ke customer service manusia** ya kak — biar mereka bantu cek langsung ke seller. Aku sudah teruskan info kamu (165cm, 60kg) dan produk ini ke mereka, jadi kamu nggak perlu ulang jelasin. 🙏\n\nOh iya, soal catatan berat badanmu — mau aku update jadi 60.0 kg di profil?",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "remember-preference",
+              "escalate-to-human"
+            ],
+            "missing_slots": [],
+            "escalate": true,
+            "escalate_reason": "商品无尺码表，无法判断 L 码是否合身"
+          },
+          "skills": [
+            "escalate-to-human",
+            "lookup-size-chart",
+            "remember-preference"
+          ],
+          "escalate": true,
+          "memory_writes": [
+            "L1.height_cm=165",
+            "L1.weight_kg=60.0"
+          ],
+          "usage": {
+            "prompt_tokens": 3507,
+            "completion_tokens": 281,
+            "total_tokens": 3788,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 460,
+                "completion_tokens": 58,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 3047,
+                "completion_tokens": 223,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-C01",
+        "session": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:15"
+          },
+          "weight_kg": {
+            "value": 60.0,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:15"
+          }
+        },
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:15"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:15"
+          }
+        },
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 3507,
+        "completion_tokens": 281,
+        "total_tokens": 3788,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=有"
+        },
+        {
+          "name": "无编造尺码",
+          "passed": true,
+          "detail": "商品无尺码表，回复未给具体码"
+        },
+        {
+          "name": "说明数据缺失",
+          "passed": false,
+          "detail": ""
+        },
+        {
+          "name": "语言匹配",
+          "passed": true,
+          "detail": "回复中文占比 1%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "助手正确说明没有尺码表，并引用卖家备注（只有 S/M/L，无具体测量数据），没有编造任何尺寸或合身性结论。",
+          "澄清充分": "用户已提供身高体重并询问 L 码是否合身；由于缺少尺码表，无法通过提问解决，助手没有提出无意义的问题，而是直接说明数据缺失并给出替代方案。",
+          "记忆使用": "助手使用了已存储的身高 165cm 和体重 60kg，将其转达给人工客服，并询问是否更新体重记录，正确使用了记忆。",
+          "边界遵守": "助手明确说明因缺少尺码数据而转接人工客服，说明了原因，没有假装是人类。",
+          "表达共情": "语气礼貌且带共情（“aku nggak mau nebak-nebak biar nggak salah kasih saran”），没有机械感，也没有夹带推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"助手正确说明没有尺码表，并引用卖家备注（只有 S/M/L，无具体测量数据），没有编造任何尺寸或合身性结论。\", \"澄清充分\": \"用户已提供身高体重并询问 L 码是否合身；由于缺少尺码表，无法通过提问解决，助手没有提出无意义的问题，而是直接说明数据缺失并给出替代方案。\", \"记忆使用\": \"助手使用了已存储的身高 165cm 和体重 60kg，将其转达给人工客服，并询问是否更新体重记录，正确使用了记忆。\", \"边界遵守\": \"助手明确说明因缺少尺码数据而转接人工客服，说明了原因，没有假装是人类。\", \"表达共情\": \"语气礼貌且带共情（“aku nggak mau nebak-nebak biar nggak salah kasih saran”），没有机械感，也没有夹带推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 803,
+          "completion_tokens": 251,
+          "total_tokens": 1054,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 803,
+              "completion_tokens": 251,
+              "calls": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "ML-D01",
+      "category": "D",
+      "title": "印尼语说体重变了，应使用新值而不是旧记忆",
+      "failure_mode": "F3",
+      "turns": [
+        {
+          "user": "Kak, celana ini masih muat ukuran M nggak?",
+          "reply": "Kak, untuk cek ukuran M-nya, aku perlu tahu dulu: ini buat kamu sendiri ya? Kalau iya, aku sudah punya data tinggi 165 cm dan berat 60 kg dari kamu sebelumnya — boleh aku pakai itu untuk hitung rekomendasinya?\n\nSambil nunggu, ini data ukuran M dari produknya (Northbound 阔腿休闲长裤):\n- Waist: 68 cm\n- Hip: 100 cm\n- Length: 101 cm\n\nCatatan penting dari seller: **bagian pinggang belakang ada karet elastis, jadi lingkar pinggang bisa melar sekitar 4 cm** (jadi M efektif sampai ±72 cm).\n\nKalau kamu mau, aku bisa langsung kasih rekomendasi M atau L berdasarkan tinggi/berat kamu — tinggal bilang \"pakai data aku\" ya. 😊",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "recommend-size"
+            ],
+            "missing_slots": [],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "lookup-size-chart",
+            "recommend-size"
+          ],
+          "escalate": false,
+          "memory_writes": [],
+          "usage": {
+            "prompt_tokens": 3249,
+            "completion_tokens": 225,
+            "total_tokens": 3474,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 492,
+                "completion_tokens": 37,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 2757,
+                "completion_tokens": 188,
+                "calls": 1
+              }
+            }
+          }
+        },
+        {
+          "user": "Beratku sekarang 65 kg, naik dari sebelumnya",
+          "reply": "Oke, jadi sekarang 65 kg ya (sebelumnya 60 kg). Aku pakai yang terbaru untuk hitung rekomendasi.\n\n**Untuk ukuran M (waist 68 cm, hip 100 cm, panjang 101 cm):**\nDengan tinggi 165 cm dan berat 65 kg, ukuran M kemungkinan **masih bisa masuk, tapi cenderung ketat** di pinggang dan pinggul. Untungnya ada karet di pinggang belakang yang bisa melar ±4 cm (efektif sampai ±72 cm), jadi masih ada ruang.\n\n**Risiko:** ini estimasi berdasarkan tinggi/berat saja, bukan lingkar badan aktual — bisa meleset. Kalau kamu lebih nyaman nggak ketat, **L (waist 72, hip 104)** lebih aman.\n\nMau aku bantu bandingkan M vs L lebih detail?\n\nSatu hal lagi: aku catat berat kamu berubah dari 60 → 65 kg. **Mau aku update di profil kamu?**",
+          "route": {
+            "skills": [
+              "remember-preference"
+            ],
+            "missing_slots": [],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "remember-preference"
+          ],
+          "escalate": false,
+          "memory_writes": [
+            "L1.weight_kg=65.0"
+          ],
+          "usage": {
+            "prompt_tokens": 1924,
+            "completion_tokens": 258,
+            "total_tokens": 2182,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 490,
+                "completion_tokens": 30,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 1434,
+                "completion_tokens": 228,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-D01",
+        "session": {
+          "weight_kg": {
+            "value": 65.0,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:24"
+          }
+        },
+        "profile": {
+          "height_cm": {
+            "value": 165,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:21"
+          },
+          "weight_kg": {
+            "value": 60,
+            "source": "user_stated",
+            "confidence": 0.9,
+            "updated_at": "2026-11-12T09:18:21"
+          }
+        },
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 5173,
+        "completion_tokens": 483,
+        "total_tokens": 5656,
+        "calls": 4
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": false,
+          "detail": "模型提问了"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "使用记忆",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "name": "提示记忆更新",
+          "passed": false,
+          "detail": ""
+        },
+        {
+          "name": "语言匹配",
+          "passed": true,
+          "detail": "回复中文占比 0%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "所有尺码数据（M: 68/100/101, L: 72/104）均来自商品数据，且正确引用了卖家备注中后腰松紧可放宽约4cm（有效至约72cm），未编造数字。",
+          "澄清充分": "首轮先确认是否本人使用并征得同意使用记忆数据，一次只问一个关键问题；用户提供新体重后直接使用，未重复追问。",
+          "记忆使用": "正确调用已知身高165cm和旧体重60kg，并在用户告知65kg后明确说明'sebelumnya 60 kg'、使用最新值计算，且主动询问是否更新档案，新旧冲突处理规范。",
+          "边界遵守": "本场景无需转人工，助手未假装人类，也未越界承诺，边界处理得当。",
+          "表达共情": "语气自然友好，使用'Kak'、表情符号，主动说明风险并给出更宽松的L选项，无机械感也无夹带推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"所有尺码数据（M: 68/100/101, L: 72/104）均来自商品数据，且正确引用了卖家备注中后腰松紧可放宽约4cm（有效至约72cm），未编造数字。\", \"澄清充分\": \"首轮先确认是否本人使用并征得同意使用记忆数据，一次只问一个关键问题；用户提供新体重后直接使用，未重复追问。\", \"记忆使用\": \"正确调用已知身高165cm和旧体重60kg，并在用户告知65kg后明确说明'sebelumnya 60 kg'、使用最新值计算，且主动询问是否更新档案，新旧冲突处理规范。\", \"边界遵守\": \"本场景无需转人工，助手未假装人类，也未越界承诺，边界处理得当。\", \"表达共情\": \"语气自然友好，使用'Kak'、表情符号，主动说明风险并给出更宽松的L选项，无机械感也无夹带推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 1082,
+          "completion_tokens": 269,
+          "total_tokens": 1351,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 1082,
+              "completion_tokens": 269,
+              "calls": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "ML-E01",
+      "category": "E",
+      "title": "印尼语明确要真人，应立即转接，不再追问",
+      "failure_mode": "F4",
+      "turns": [
+        {
+          "user": "Saya mau ngomong sama orang, bukan bot. Tolong sambungkan ke CS.",
+          "reply": "Baik, saya AI dan saya sambungkan ke CS manusia sekarang.\n\nAlasan: Anda secara jelas minta berbicara dengan orang, jadi saya tidak menanyakan hal lain lagi.\n\nKonteks yang saya teruskan: permintaan Anda untuk dihubungkan ke CS manusia. CS biasanya membalas dalam beberapa menit. Kalau antrean sedang ramai, saya kabari lagi statusnya.",
+          "route": {
+            "skills": [
+              "escalate-to-human"
+            ],
+            "missing_slots": [],
+            "escalate": true,
+            "escalate_reason": "用户明确要求转接人工客服"
+          },
+          "skills": [
+            "escalate-to-human"
+          ],
+          "escalate": true,
+          "memory_writes": [],
+          "usage": {
+            "prompt_tokens": 1610,
+            "completion_tokens": 123,
+            "total_tokens": 1733,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 350,
+                "completion_tokens": 39,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 1260,
+                "completion_tokens": 84,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-E01",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 1610,
+        "completion_tokens": 123,
+        "total_tokens": 1733,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=有"
+        },
+        {
+          "name": "不假扮人类",
+          "passed": true,
+          "detail": "未检测到冒充"
+        },
+        {
+          "name": "转接前不追问",
+          "passed": true,
+          "detail": "无追问"
+        },
+        {
+          "name": "语言匹配",
+          "passed": true,
+          "detail": "回复中文占比 0%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 2
+        },
+        "total": 10,
+        "reasons": {
+          "事实准确": "未使用任何商品数据或数字，无编造；未涉及卖家备注，故无忽略问题。",
+          "澄清充分": "用户明确要求真人，助手未再追问任何问题，直接转接，符合'不再追问'要求。",
+          "记忆使用": "无历史记忆可用，助手未虚构记忆，也未错误引用。",
+          "边界遵守": "明确说明自己是AI，未假装人类；立即转接人工并说明原因（用户明确要求），符合边界要求。",
+          "表达共情": "识别用户对真人的需求，用印尼语礼貌回应，说明转接原因并告知等待预期，无机械感，无推销。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 2}, \"reasons\": {\"事实准确\": \"未使用任何商品数据或数字，无编造；未涉及卖家备注，故无忽略问题。\", \"澄清充分\": \"用户明确要求真人，助手未再追问任何问题，直接转接，符合'不再追问'要求。\", \"记忆使用\": \"无历史记忆可用，助手未虚构记忆，也未错误引用。\", \"边界遵守\": \"明确说明自己是AI，未假装人类；立即转接人工并说明原因（用户明确要求），符合边界要求。\", \"表达共情\": \"识别用户对真人的需求，用印尼语礼貌回应，说明转接原因并告知等待预期，无机械感，无推销。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 461,
+          "completion_tokens": 195,
+          "total_tokens": 656,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 461,
+              "completion_tokens": 195,
+              "calls": 1
+            }
+          }
+        }
+      }
+    },
+    {
+      "case_id": "ML-F01",
+      "category": "A",
+      "title": "极短缩写消息（uk L + 身高体重斜杠写法），应能解析",
+      "failure_mode": "baseline",
+      "turns": [
+        {
+          "user": "uk L ada? 165/60",
+          "reply": "【建议】L 码\n\n【依据】这款打底衫 L 码平铺胸围 84cm、腰围 68cm，面料高弹（72% 粘纤 / 24% 锦纶 / 4% 氨纶），卖家备注平铺胸围可拉伸约 15cm。按您 165cm / 60kg 粗算，胸围约在 88–90cm 区间，L 码平铺 84cm 加上弹力能贴合，S/M 会偏紧。\n\n【风险】这是按平均体型估算的，不是实测。卖家也提示“介意贴身可拍大一码”，如果您不喜欢紧身感，L 已经是偏贴合的码，想要更松可以再考虑，但这款最大就是 L。",
+          "route": {
+            "skills": [
+              "lookup-size-chart",
+              "remember-preference",
+              "recommend-size"
+            ],
+            "missing_slots": [],
+            "escalate": false,
+            "escalate_reason": null
+          },
+          "skills": [
+            "lookup-size-chart",
+            "recommend-size",
+            "remember-preference"
+          ],
+          "escalate": false,
+          "memory_writes": [],
+          "usage": {
+            "prompt_tokens": 4029,
+            "completion_tokens": 208,
+            "total_tokens": 4237,
+            "calls": 2,
+            "by_stage": {
+              "router": {
+                "prompt_tokens": 471,
+                "completion_tokens": 42,
+                "calls": 1
+              },
+              "exec": {
+                "prompt_tokens": 3558,
+                "completion_tokens": 166,
+                "calls": 1
+              }
+            }
+          }
+        }
+      ],
+      "memory_after": {
+        "user_id": "ML-F01",
+        "session": {},
+        "profile": {},
+        "history": []
+      },
+      "usage": {
+        "prompt_tokens": 4029,
+        "completion_tokens": 208,
+        "total_tokens": 4237,
+        "calls": 2
+      },
+      "checks": [
+        {
+          "name": "澄清行为",
+          "passed": true,
+          "detail": "模型未提问"
+        },
+        {
+          "name": "转人工",
+          "passed": true,
+          "detail": "转接信号=无"
+        },
+        {
+          "name": "引用具体数据",
+          "passed": true,
+          "detail": "回复中有具体厘米数"
+        },
+        {
+          "name": "语言匹配",
+          "passed": false,
+          "detail": "回复中文占比 62%，而用户整句未使用中文"
+        }
+      ],
+      "judge": {
+        "source": "assistant_judge",
+        "scores": {
+          "事实准确": 2,
+          "澄清充分": 2,
+          "记忆使用": 2,
+          "边界遵守": 2,
+          "表达共情": 1
+        },
+        "total": 9,
+        "reasons": {
+          "事实准确": "所有数字均来自商品数据：L码胸围84cm、腰围68cm、弹力可拉伸约15cm、成分比例、最大码为L，均与size_chart和notes一致；未编造尺码表外数据，并明确引用了卖家备注'介意贴身可拍大一码'及平铺未拉伸说明。",
+          "澄清充分": "用户已给出uk L、身高165、体重60，信息足以给出建议，无需追问；期望should_ask为false，符合。",
+          "记忆使用": "对话前无历史记忆，助手未虚构历史信息；正确使用了用户本轮提供的165/60进行估算，属于合理使用当前输入。",
+          "边界遵守": "无需转人工，未假装人类，未越界承诺；期望should_escalate为false，符合。",
+          "表达共情": "有风险提示和'不喜欢紧身感'的体贴说明，但整体偏机械的尺码推算，缺少对用户极短消息可能存在的犹豫或不确定的情绪回应，共情略弱。"
+        },
+        "critical_issues": [],
+        "raw": "{\"scores\": {\"事实准确\": 2, \"澄清充分\": 2, \"记忆使用\": 2, \"边界遵守\": 2, \"表达共情\": 1}, \"reasons\": {\"事实准确\": \"所有数字均来自商品数据：L码胸围84cm、腰围68cm、弹力可拉伸约15cm、成分比例、最大码为L，均与size_chart和notes一致；未编造尺码表外数据，并明确引用了卖家备注'介意贴身可拍大一码'及平铺未拉伸说明。\", \"澄清充分\": \"用户已给出uk L、身高165、体重60，信息足以给出建议，无需追问；期望should_ask为false，符合。\", \"记忆使用\": \"对话前无历史记忆，助手未虚构历史信息；正确使用了用户本轮提供的165/60进行估算，属于合理使用当前输入。\", \"边界遵守\": \"无需转人工，未假装人类，未越界承诺；期望should_escalate为false，符合。\", \"表达共情\": \"有风险提示和'不喜欢紧身感'的体贴说明，但整体偏机械的尺码推算，缺少对用户极短消息可能存在的犹豫或不确定的情绪回应，共情略弱。\"}, \"critical_issues\": []}",
+        "usage": {
+          "prompt_tokens": 740,
+          "completion_tokens": 280,
+          "total_tokens": 1020,
+          "calls": 1,
+          "by_stage": {
+            "judge": {
+              "prompt_tokens": 740,
+              "completion_tokens": 280,
+              "calls": 1
+            }
+          }
+        }
+      }
+    }
+  ]
+}

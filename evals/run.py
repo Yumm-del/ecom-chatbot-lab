@@ -32,6 +32,7 @@ from bot.agent import (  # noqa: E402
     v2_turn,
 )
 from bot.memory import UserMemory  # noqa: E402
+from bot.prompts import set_reply_language  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent.parent
 CASES_PATH = Path(__file__).resolve().parent / "cases.json"
@@ -46,6 +47,18 @@ _ASK_MARKERS = ("？", "?", "请问", "多少", "方便告诉", "能不能告诉
 _ESCALATE_MARKERS = ("人工", "转接", "客服同事", "专员")
 _SIZE_RE = re.compile(r"\b(XXS|XS|S|M|L|XL|XXL|\d{2})\s*码")
 _HUMAN_PRETEND = ("我是真人", "我是人工客服", "我是一个人")
+
+# 中文字符。用来做"语言匹配"检查——不需要认识印尼语或他加禄语，
+# 只要判断"用户整句没打中文，回复却整段是中文"就够了。
+_CJK_RE = re.compile(r"[一-鿿]")
+
+
+def _cjk_ratio(text: str) -> float:
+    """非空白字符里，中文字符占的比例。"""
+    chars = [c for c in text if not c.isspace()]
+    if not chars:
+        return 0.0
+    return sum(1 for c in chars if _CJK_RE.match(c)) / len(chars)
 
 
 def check_case(case: dict, result: dict, product: dict | None) -> list[dict]:
@@ -119,6 +132,20 @@ def check_case(case: dict, result: dict, product: dict | None) -> list[dict]:
     if expect.get("must_not_ask_before_escalate"):
         has_question = any(m in reply for m in ("？", "?"))
         add("转接前不追问", not has_question, "回复里有问句" if has_question else "无追问")
+
+    # 语言匹配：用户整轮没打过中文，回复就不该整段是中文。
+    #
+    # 这条检查是 v3 多语言测试里"给菲律宾用户回整段中文"的直接对应物。
+    # 它不需要认识任何外语，只看字符集——所以不会像 _SIZE_RE 那样带语言偏置。
+    # 中文用例的用户消息都含中文，这条会自动跳过（不影响原有检查项计数）。
+    user_text = case["turns"][-1] if case.get("turns") else ""
+    if user_text and not _CJK_RE.search(user_text):
+        ratio = _cjk_ratio(reply)
+        add(
+            "语言匹配",
+            ratio <= 0.2,
+            f"回复中文占比 {ratio:.0%}，而用户整句未使用中文",
+        )
 
     return checks
 
@@ -342,7 +369,7 @@ def build_report(version: str, results: list[dict], judged: bool) -> str:
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="运行电商导购 chatbot 评测")
-    parser.add_argument("--version", choices=["v1", "v2", "v3"], required=True)
+    parser.add_argument("--version", choices=["v1", "v2", "v3", "v4"], required=True)
     parser.add_argument("--output", required=True, help="输出目录")
     parser.add_argument("--limit", type=int, default=None, help="只跑前 N 条")
     parser.add_argument("--case-ids", default=None, help="逗号分隔的用例 ID，如 A01,B02")
@@ -357,7 +384,17 @@ def main() -> None:
         default=None,
         help="指定 Skill 定义目录；v2 可指向冻结快照 skills_v2_snapshot/",
     )
+    parser.add_argument(
+        "--reply-language",
+        choices=["auto", "zh"],
+        default="auto",
+        help="回复语言策略。auto=跟随用户（默认）；zh=永远中文，"
+             "仅用于复现 v1/v2/v3 的冻结结果",
+    )
     args = parser.parse_args()
+
+    # 语言策略要在跑任何用例之前设好——它影响 exec prompt 的生成
+    set_reply_language(args.reply_language)
 
     # 用例集路径：默认是 cases.json；--cases 可以指向多语言集等其它文件。
     # 注意数据集哈希是对"实际用的那个文件"算的，所以换了用例集哈希也会变——
@@ -428,6 +465,7 @@ def main() -> None:
                 "run_at": datetime.now().isoformat(timespec="seconds"),
                 "dataset_sha256": dataset_sha,
                 "cases_file": cases_path.name,
+                "reply_language": args.reply_language,
                 "skills_dir": str(skills_dir) if skills_dir else "skills/",
                 "usage_total": total_usage,
                 "usage_judge": judge_usage if args.judge else None,

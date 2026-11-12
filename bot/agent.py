@@ -18,8 +18,8 @@ from pathlib import Path
 from .memory import UserMemory
 from .prompts import (
     V1_SYSTEM,
-    V2_EXEC_SYSTEM,
     V2_ROUTER_SYSTEM,
+    exec_system,
     render_product,
     render_skills,
 )
@@ -392,7 +392,7 @@ def v2_turn(
     skill_docs = load_skill_docs(skills, skills_dir=skills_dir)
 
     # --- 步骤 4：生成回复 ---
-    exec_prompt = V2_EXEC_SYSTEM.format(
+    exec_prompt = exec_system().format(
         memory_text=memory.render_for_prompt(),
         product_text=render_product(product),
         skills_text=render_skills(skill_docs),
